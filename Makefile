@@ -1,114 +1,132 @@
-# --- EXECUTABLES ---
-NAME		= push_swap
-BONUS_NAME	= checker
+# ==================================================================================
+# SO_LONG - MAKEFILE
+# ==================================================================================
 
-# --- COMPILER & FLAGS ---
-CC			= cc
-CFLAGS		= -Wall -Wextra -Werror -I include/ -I libft/include/
-RM			= rm -f
+# ----------------- NOMES DOS EXECUTÁVEIS -----------------
+NAME        = so_long
+BONUS_NAME  = so_long_bonus
 
-# --- DIRECTORIES ---
-OBJ_DIR		= obj
-SRC_DIR		= src
-LIBFT_DIR	= libft
+# ----------------- COMPILADOR E FLAGS -----------------
+CC          = gcc
+CFLAGS      = -Wall -Wextra -Werror -g
+INCLUDES    = -Iincludes -I$(MLX_DIR) -I$(LIBFT_DIR)/include
 
-# --- SOURCE FILES (No Wildcards) ---
-# Project sources
-SRCS_FILES	= ft_alg_analysis.c \
-		ft_alg_cost.c \
-		ft_alg_movement.c \
-		ft_alg_target.c \
-		ft_parse.c \
-		ft_parsing.c \
-		ft_push_swap.c \
-		ft_stack_operations.c \
-		ft_stack_rot_ab.c \
-		ft_stack_rot_r.c \
-		ft_stack_utils1.c \
-		ft_stack_utils2.c
+# ----------------- DIRETÓRIOS -----------------
+LIBFT_DIR   = libft
+MLX_DIR     = minilibx
+SRCS_DIR    = srcs
+BONUS_DIR   = srcs_bonus
+OBJ_DIR     = .objects
+BONUS_OBJ_DIR = .objects_bonus
 
-# Libft sources
-LIBFT_FILES	=	ft_calloc.c \
-				ft_ato_bin.c ft_atof.c ft_atohex.c ft_atohex_ptr.c ft_atoi_base.c \
-				ft_atoi.c ft_atol.c ft_ato_octa.c ft_base_is_valid.c ft_bin_toa.c \
-				ft_ftoa.c ft_hextoa.c ft_itoa.c ft_octa_toa.c ft_ptr_hextoa.c \
-				ft_utoa_base.c \
-				ft_isalnum.c ft_isalpha.c ft_isascii.c ft_isdigit.c ft_isprint.c \
-				ft_isspace.c ft_tolower.c ft_toupper.c \
-				ft_dlstadd_back.c ft_dlstadd_front.c ft_dlstclear.c ft_dlstdelone.c \
-				ft_dlstiter.c ft_dlstlast.c ft_dlstmap.c ft_dlstnew.c ft_dlstsize.c \
-				get_next_line.c get_next_line_utils.c \
-				ft_lstadd_back.c ft_lstadd_front.c ft_lstclear.c ft_lstdelone.c \
-				ft_lstiter.c ft_lstlast.c ft_lstmap.c ft_lstnew.c ft_lstsize.c \
-				ft_bzero.c ft_memchr.c ft_memcmp.c ft_memcpy.c ft_memmove.c ft_memset.c \
-				ft_putchar_fd.c ft_putendl_fd.c ft_putnbr_fd.c ft_putstr_fd.c \
-				ft_buffer.c ft_dispatch_specifier.c ft_flags.c ft_format_output.c \
-				ft_format_utils.c ft_handle_char.c ft_handle_decimal.c ft_handle_float.c \
-				ft_handle_hex.c ft_handle_integer.c ft_handle_octal.c ft_handle_percent.c \
-				ft_handle_pointer.c ft_handle_string.c ft_handle_unsigned.c ft_parser.c \
-				ft_precision_num.c ft_precision_str.c ft_printf.c \
-				ft_strchr.c ft_strdup.c ft_strlcat.c ft_strlcpy.c ft_strlen.c \
-				ft_strncmp.c ft_strnstr.c ft_strrchr.c \
-				ft_count_digits.c ft_split.c ft_striteri.c ft_strjoin.c ft_strmapi.c \
-				ft_strtrim.c ft_substr.c
+# ----------------- BIBLIOTECAS -----------------
+LIBFT       = $(LIBFT_DIR)/libft.a
+MLX         = $(MLX_DIR)/libmlx.a
+MLX_FLAGS   = -L$(MLX_DIR) -lmlx -lXext -lX11 -lm
+LIBFT_FLAGS = -L$(LIBFT_DIR) -lft
 
-# Main files
-MAIN_SRC	= main.c
-BONUS_SRC	= checker_bonus.c
+# ----------------- ARQUIVOS FONTE (MANDATORY) -----------------
+SRCS        = $(SRCS_DIR)/main.c \
+              $(SRCS_DIR)/map_parsing.c \
+              $(SRCS_DIR)/map_validation.c \
+              $(SRCS_DIR)/map_validation_utils.c \
+              $(SRCS_DIR)/map_flood_fill.c \
+              $(SRCS_DIR)/game_init.c \
+              $(SRCS_DIR)/game_render.c \
+              $(SRCS_DIR)/game_events.c \
+              $(SRCS_DIR)/utils.c
 
-# --- VPATH (Search Paths for Sources) ---
-VPATH		= $(SRC_DIR) \
-			  $(LIBFT_DIR)/src/alloc $(LIBFT_DIR)/src/conversion $(LIBFT_DIR)/src/ctype \
-			  $(LIBFT_DIR)/src/dlist $(LIBFT_DIR)/src/gnl $(LIBFT_DIR)/src/list \
-			  $(LIBFT_DIR)/src/memory $(LIBFT_DIR)/src/output $(LIBFT_DIR)/src/printf \
-			  $(LIBFT_DIR)/src/string $(LIBFT_DIR)/src/utils
+# ----------------- ARQUIVOS FONTE (BONUS) -----------------
+BONUS_SRCS  = $(BONUS_DIR)/main_bonus.c \
+              $(BONUS_DIR)/map_parsing_bonus.c \
+              $(BONUS_DIR)/map_validation_bonus.c \
+              $(BONUS_DIR)/map_validation_utils_bonus.c \
+              $(BONUS_DIR)/map_flood_fill_bonus.c \
+              $(BONUS_DIR)/game_init_bonus.c \
+              $(BONUS_DIR)/animation_bonus.c \
+              $(BONUS_DIR)/enemies_bonus.c \
+              $(BONUS_DIR)/ui_bonus.c \
+              $(BONUS_DIR)/game_events_bonus.c \
+              $(BONUS_DIR)/utils_bonus.c
 
-# --- OBJECT FILES ---
-# Create object file lists by adding the object directory prefix and changing .c to .o
-SRCS_OBJS		= $(addprefix $(OBJ_DIR)/, $(SRCS_FILES:.c=.o))
-LIBFT_OBJS		= $(addprefix $(OBJ_DIR)/, $(LIBFT_FILES:.c=.o))
-MAIN_OBJ		= $(addprefix $(OBJ_DIR)/, $(MAIN_SRC:.c=.o))
-BONUS_OBJ		= $(addprefix $(OBJ_DIR)/, $(BONUS_SRC:.c=.o))
+# ----------------- ARQUIVOS OBJETO -----------------
+OBJS        = $(SRCS:$(SRCS_DIR)/%.c=$(OBJ_DIR)/%.o)
+BONUS_OBJS  = $(BONUS_SRCS:$(BONUS_DIR)/%.c=$(BONUS_OBJ_DIR)/%.o)
 
-# Common objects for both executables
-COMMON_OBJS		= $(SRCS_OBJS) $(LIBFT_OBJS)
+# ----------------- CORES PARA OUTPUT -----------------
+GREEN       = \033[0;32m
+YELLOW      = \033[0;33m
+RED         = \033[0;31m
+RESET       = \033[0m
 
-# --- RULES ---
-.PHONY: all bonus clean fclean re
+# ==================================================================================
+# REGRAS PRINCIPAIS
+# ==================================================================================
 
 all: $(NAME)
 
-# Rule to link the main program
-$(NAME): $(MAIN_OBJ) $(COMMON_OBJS)
-	@echo "Linking $(NAME)..."
-	@$(CC) $(CFLAGS) -o $(NAME) $(MAIN_OBJ) $(COMMON_OBJS)
-	@echo "$(NAME) is ready! ✅"
+$(NAME): $(LIBFT) $(MLX) $(OBJS)
+	@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
+	@$(CC) $(CFLAGS) $(OBJS) $(MLX_FLAGS) $(LIBFT_FLAGS) -o $(NAME)
+	@echo "$(GREEN)✓ SUCCESS: $(NAME) created$(RESET)"
 
-# Rule to build the bonus program
 bonus: $(BONUS_NAME)
 
-# Rule to link the bonus program
-$(BONUS_NAME): $(BONUS_OBJ) $(COMMON_OBJS)
-	@echo "Linking $(BONUS_NAME)..."
-	@$(CC) $(CFLAGS) -o $(BONUS_NAME) $(BONUS_OBJ) $(COMMON_OBJS)
-	@echo "$(BONUS_NAME) is ready! ✨"
+$(BONUS_NAME): $(LIBFT) $(MLX) $(BONUS_OBJS)
+	@if [ ! -f .bonus ] || [ $(BONUS_DIR)/* -nt .bonus ] 2>/dev/null; then \
+		echo "$(YELLOW)Linking $(BONUS_NAME)...$(RESET)"; \
+		$(CC) $(CFLAGS) $(BONUS_OBJS) $(MLX_FLAGS) $(LIBFT_FLAGS) -o $(BONUS_NAME); \
+		touch .bonus; \
+		echo "$(GREEN)✓ SUCCESS: $(BONUS_NAME) created$(RESET)"; \
+	else \
+		echo "$(GREEN)make: Nothing to be done for 'bonus'.$(RESET)"; \
+	fi
 
-# Generic rule to compile any .c file into an object file inside OBJ_DIR
-# The '| $(OBJ_DIR)' part ensures the directory is created before compiling
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	@echo "Compiling $<..."
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# Rule to create the object directory
-$(OBJ_DIR):
+# ----------------- COMPILAÇÃO DE OBJETOS (MANDATORY) -----------------
+$(OBJ_DIR)/%.o: $(SRCS_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# ----------------- COMPILAÇÃO DE OBJETOS (BONUS) -----------------
+$(BONUS_OBJ_DIR)/%.o: $(BONUS_DIR)/%.c
+	@mkdir -p $(BONUS_OBJ_DIR)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# ----------------- BIBLIOTECAS -----------------
+$(LIBFT):
+	@echo "$(YELLOW)Building libft...$(RESET)"
+	@$(MAKE) -C $(LIBFT_DIR) --no-print-directory
+	@echo "$(GREEN)✓ libft compiled$(RESET)"
+
+$(MLX):
+	@echo "$(YELLOW)Building minilibx...$(RESET)"
+	@$(MAKE) -C $(MLX_DIR) --no-print-directory 2>/dev/null || true
+	@echo "$(GREEN)✓ minilibx compiled$(RESET)"
+
+# ==================================================================================
+# REGRAS DE LIMPEZA
+# ==================================================================================
 
 clean:
-	@echo "Cleaning object files..."
-	@$(RM) -r $(OBJ_DIR)
+	@echo "$(RED)Cleaning object files...$(RESET)"
+	@rm -rf $(OBJ_DIR) $(BONUS_OBJ_DIR)
+	@rm -f .bonus
+	@$(MAKE) -C $(LIBFT_DIR) clean --no-print-directory
+	@$(MAKE) -C $(MLX_DIR) clean --no-print-directory 2>/dev/null || true
+	@echo "$(GREEN)✓ Object files removed$(RESET)"
 
 fclean: clean
-	@echo "Cleaning executables..."
-	@$(RM) $(NAME) $(BONUS_NAME)
+	@echo "$(RED)Removing executables...$(RESET)"
+	@rm -f $(NAME) $(BONUS_NAME)
+	@$(MAKE) -C $(LIBFT_DIR) fclean --no-print-directory
+	@echo "$(GREEN)✓ Executables removed$(RESET)"
 
 re: fclean all
+
+# ==================================================================================
+# PHONY
+# ==================================================================================
+
+.PHONY: all bonus clean fclean re

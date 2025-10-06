@@ -43,6 +43,7 @@ CONVERSION_SRC	= ft_ato_bin.c \
 		ft_ftoa.c \
 		ft_hextoa.c \
 		ft_itoa.c \
+		ft_itoa_base.c \
 		ft_octa_toa.c \
 		ft_ptr_hextoa.c \
 		ft_utoa_base.c
