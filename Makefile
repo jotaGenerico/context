@@ -1,132 +1,90 @@
-# ==================================================================================
-# SO_LONG - MAKEFILE
-# ==================================================================================
+# **************************************************************************** #
+#                             Minitalk/Libft Makefile                          #
+# **************************************************************************** #
 
-# ----------------- NOMES DOS EXECUTÁVEIS -----------------
-NAME        = so_long
-BONUS_NAME  = so_long_bonus
+# Program Names
+NAME_SERVER 	= server
+NAME_CLIENT 	= client
+NAME_SERVER_B 	= server_bonus
+NAME_CLIENT_B 	= client_bonus
 
-# ----------------- COMPILADOR E FLAGS -----------------
-CC          = gcc
-CFLAGS      = -Wall -Wextra -Werror -g
-INCLUDES    = -Iincludes -I$(MLX_DIR) -I$(LIBFT_DIR)/include
+# Directories
+SRC_DIR 		= srcs
+SRC_BONUS_DIR 		= srcs_bonus
+INC_DIR 		= includes
+LIBFT_DIR 		= libft
 
-# ----------------- DIRETÓRIOS -----------------
-LIBFT_DIR   = libft
-MLX_DIR     = minilibx
-SRCS_DIR    = srcs
-BONUS_DIR   = srcs_bonus
-OBJ_DIR     = .objects
-BONUS_OBJ_DIR = .objects_bonus
+# Compiler Flags and Tools
+CC 			= cc
+CFLAGS 			= -Wall -Wextra -Werror -g
+RM 			= rm -f
 
-# ----------------- BIBLIOTECAS -----------------
-LIBFT       = $(LIBFT_DIR)/libft.a
-MLX         = $(MLX_DIR)/libmlx.a
-MLX_FLAGS   = -L$(MLX_DIR) -lmlx -lXext -lX11 -lm
-LIBFT_FLAGS = -L$(LIBFT_DIR) -lft
+# Include Paths (-I)
+# Garante que o gcc encontre minitalk.h/minitalk_bonus.h e libft.h
+INCLUDES 	= -I$(INC_DIR) -I$(LIBFT_DIR)/include
 
-# ----------------- ARQUIVOS FONTE (MANDATORY) -----------------
-SRCS        = $(SRCS_DIR)/main.c \
-              $(SRCS_DIR)/map_parsing.c \
-              $(SRCS_DIR)/map_validation.c \
-              $(SRCS_DIR)/map_validation_utils.c \
-              $(SRCS_DIR)/map_flood_fill.c \
-              $(SRCS_DIR)/game_init.c \
-              $(SRCS_DIR)/game_render.c \
-              $(SRCS_DIR)/game_events.c \
-              $(SRCS_DIR)/utils.c
+# Library Linker Flags (-L and -l)
+# Linka com a libft.a que está em $(LIBFT_DIR)
+LIBS 		= -L$(LIBFT_DIR) -lft
 
-# ----------------- ARQUIVOS FONTE (BONUS) -----------------
-BONUS_SRCS  = $(BONUS_DIR)/main_bonus.c \
-              $(BONUS_DIR)/map_parsing_bonus.c \
-              $(BONUS_DIR)/map_validation_bonus.c \
-              $(BONUS_DIR)/map_validation_utils_bonus.c \
-              $(BONUS_DIR)/map_flood_fill_bonus.c \
-              $(BONUS_DIR)/game_init_bonus.c \
-              $(BONUS_DIR)/animation_bonus.c \
-              $(BONUS_DIR)/enemies_bonus.c \
-              $(BONUS_DIR)/ui_bonus.c \
-              $(BONUS_DIR)/game_events_bonus.c \
-              $(BONUS_DIR)/utils_bonus.c
+# Mandatory Sources
+SRCS_SERVER 	= $(SRC_DIR)/server.c
+SRCS_CLIENT 	= $(SRC_DIR)/client.c
 
-# ----------------- ARQUIVOS OBJETO -----------------
-OBJS        = $(SRCS:$(SRCS_DIR)/%.c=$(OBJ_DIR)/%.o)
-BONUS_OBJS  = $(BONUS_SRCS:$(BONUS_DIR)/%.c=$(BONUS_OBJ_DIR)/%.o)
+# Bonus Sources
+SRCS_SERVER_B 	= $(SRC_BONUS_DIR)/server_bonus.c
+SRCS_CLIENT_B 	= $(SRC_BONUS_DIR)/client_bonus.c
 
-# ----------------- CORES PARA OUTPUT -----------------
-GREEN       = \033[0;32m
-YELLOW      = \033[0;33m
-RED         = \033[0;31m
-RESET       = \033[0m
+# Targets List
+TARGETS_MANDATORY = $(NAME_SERVER) $(NAME_CLIENT)
+TARGETS_BONUS = $(NAME_SERVER_B) $(NAME_CLIENT_B)
 
-# ==================================================================================
-# REGRAS PRINCIPAIS
-# ==================================================================================
 
-all: $(NAME)
+# --- PHONY RULES ---
 
-$(NAME): $(LIBFT) $(MLX) $(OBJS)
-	@echo "$(YELLOW)Linking $(NAME)...$(RESET)"
-	@$(CC) $(CFLAGS) $(OBJS) $(MLX_FLAGS) $(LIBFT_FLAGS) -o $(NAME)
-	@echo "$(GREEN)✓ SUCCESS: $(NAME) created$(RESET)"
+.PHONY: all mandatory bonus clean fclean re libft
 
-bonus: $(BONUS_NAME)
+all: mandatory
 
-$(BONUS_NAME): $(LIBFT) $(MLX) $(BONUS_OBJS)
-	@if [ ! -f .bonus ] || [ $(BONUS_DIR)/* -nt .bonus ] 2>/dev/null; then \
-		echo "$(YELLOW)Linking $(BONUS_NAME)...$(RESET)"; \
-		$(CC) $(CFLAGS) $(BONUS_OBJS) $(MLX_FLAGS) $(LIBFT_FLAGS) -o $(BONUS_NAME); \
-		touch .bonus; \
-		echo "$(GREEN)✓ SUCCESS: $(BONUS_NAME) created$(RESET)"; \
-	else \
-		echo "$(GREEN)make: Nothing to be done for 'bonus'.$(RESET)"; \
-	fi
+mandatory: $(TARGETS_MANDATORY)
 
-# ----------------- COMPILAÇÃO DE OBJETOS (MANDATORY) -----------------
-$(OBJ_DIR)/%.o: $(SRCS_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)
-	@echo "$(YELLOW)Compiling $<...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+bonus: $(TARGETS_BONUS)
 
-# ----------------- COMPILAÇÃO DE OBJETOS (BONUS) -----------------
-$(BONUS_OBJ_DIR)/%.o: $(BONUS_DIR)/%.c
-	@mkdir -p $(BONUS_OBJ_DIR)
-	@echo "$(YELLOW)Compiling $<...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+# --- COMPILATION RULES ---
 
-# ----------------- BIBLIOTECAS -----------------
-$(LIBFT):
-	@echo "$(YELLOW)Building libft...$(RESET)"
-	@$(MAKE) -C $(LIBFT_DIR) --no-print-directory
-	@echo "$(GREEN)✓ libft compiled$(RESET)"
+# Compila Libft primeiro
+$(LIBFT_DIR)/libft.a:
+	@echo "\n$(GREEN)--- Compilando Libft ---$(NC)"
+	@make -C $(LIBFT_DIR)
+	@echo "$(GREEN)----------------------$(NC)\n"
 
-$(MLX):
-	@echo "$(YELLOW)Building minilibx...$(RESET)"
-	@$(MAKE) -C $(MLX_DIR) --no-print-directory 2>/dev/null || true
-	@echo "$(GREEN)✓ minilibx compiled$(RESET)"
+# Regra Genérica de Linkagem (Usa $^ para todas as dependências e $@ para o target)
+$(TARGETS_MANDATORY) $(TARGETS_BONUS): $(LIBFT_DIR)/libft.a
 
-# ==================================================================================
-# REGRAS DE LIMPEZA
-# ==================================================================================
+$(NAME_SERVER): $(SRCS_SERVER)
+	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
+
+$(NAME_CLIENT): $(SRCS_CLIENT)
+	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
+
+$(NAME_SERVER_B): $(SRCS_SERVER_B)
+	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
+
+$(NAME_CLIENT_B): $(SRCS_CLIENT_B)
+	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
+
+
+# --- CLEANING RULES ---
 
 clean:
-	@echo "$(RED)Cleaning object files...$(RESET)"
-	@rm -rf $(OBJ_DIR) $(BONUS_OBJ_DIR)
-	@rm -f .bonus
-	@$(MAKE) -C $(LIBFT_DIR) clean --no-print-directory
-	@$(MAKE) -C $(MLX_DIR) clean --no-print-directory 2>/dev/null || true
-	@echo "$(GREEN)✓ Object files removed$(RESET)"
+	@make clean -C $(LIBFT_DIR)
 
 fclean: clean
-	@echo "$(RED)Removing executables...$(RESET)"
-	@rm -f $(NAME) $(BONUS_NAME)
-	@$(MAKE) -C $(LIBFT_DIR) fclean --no-print-directory
-	@echo "$(GREEN)✓ Executables removed$(RESET)"
+	@make fclean -C $(LIBFT_DIR)
+	$(RM) $(TARGETS_MANDATORY) $(TARGETS_BONUS)
 
 re: fclean all
 
-# ==================================================================================
-# PHONY
-# ==================================================================================
-
-.PHONY: all bonus clean fclean re
+# --- COLORS (Opcional, mas útil para a 42) ---
+GREEN = \033[0;32m
+NC = \033[0m

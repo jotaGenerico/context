@@ -1,36 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atol.c                                          :+:      :+:    :+:   */
+/*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jose-cad <jose-cad@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/10 13:06:04 by jose-cad          #+#    #+#             */
-/*   Updated: 2025/09/10 13:42:09 by jose-cad         ###   ########.fr       */
+/*   Created: 2025/10/03 23:50:02 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/10/03 23:50:08 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef MINITALK_H
+# define MINITALK_H
 
-long	ft_atol(const char *nptr)
+# include <signal.h>
+# include <unistd.h>
+# include "libft.h"
+
+typedef struct s_server
 {
-	int		sign;
-	long	result;
+	unsigned char	current_char;
+	int				bits_received;
+	pid_t			client_pid;
+}	t_server;
 
-	sign = 1;
-	result = 0;
-	while (*nptr == ' ' || (*nptr >= 9 && *nptr <= 13))
-		nptr++;
-	if (*nptr == '-' || *nptr == '+')
-	{
-		if (*nptr == '-')
-			sign = -1;
-		nptr++;
-	}
-	while (*nptr >= '0' && *nptr <= '9')
-	{
-		result = result * 10 + (*nptr - '0');
-		nptr++;
-	}
-	return (result * sign);
-}
+#endif
