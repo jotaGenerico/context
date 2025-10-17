@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk_bonus.h                                   :+:      :+:    :+:   */
+/*   enemies_utils_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jose-cad <jose-cad@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/03 23:50:02 by jose-cad          #+#    #+#             */
-/*   Updated: 2025/10/03 23:50:08 by jose-cad         ###   ########.fr       */
+/*   Created: 2025/10/08 11:25:02 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/10/08 11:25:07 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_BONUS_H
-# define MINITALK_BONUS_H
+#include "so_long_bonus.h"
 
-# include <stdlib.h>
-# include <signal.h>
-# include <unistd.h>
-# include "libft.h"
-
-typedef struct s_server
+void	free_enemies(t_game *game)
 {
-	unsigned char	current_char;
-	int				bits_received;
-	pid_t			client_pid;
-}	t_server;
+	t_enemy	*current;
+	t_enemy	*next;
 
-#endif
+	current = game->enemies;
+	while (current)
+	{
+		next = current->next;
+		free(current);
+		current = next;
+	}
+	game->enemies = NULL;
+}
