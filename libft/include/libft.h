@@ -39,9 +39,11 @@ unsigned long	ft_hextoa_ptr(const char *hex_str);
 char			*ft_hextoa_lower(unsigned int nbr);
 char			*ft_hextoa_upper(unsigned int nbr);
 int				ft_isalnum(int c);
+int				ft_isalnum_or_underscore(char c);
 int				ft_isalpha(int c);
 int				ft_isascii(int c);
 int				ft_isdigit(int c);
+int				ft_isnumeric(const char *str);
 int				ft_isprint(int c);
 int				ft_isspace(int c);
 char			*ft_itoa(int n);
@@ -53,6 +55,7 @@ void			*ft_memset(void *s, int c, size_t n);
 char			*ft_octa_toa(unsigned int nbr);
 char			*ft_ptr_hextoa(unsigned long ptr);
 void			ft_putchar_fd(char c, int fd);
+int				ft_dprintf(int fd, const char *format, ...);
 void			ft_putendl_fd(char *s, int fd);
 void			ft_putnbr_fd(int n, int fd);
 void			ft_putstr_fd(char *s, int fd);
@@ -61,10 +64,12 @@ char			*ft_strchr(const char *s, int c);
 char			*ft_strdup(const char *s);
 void			ft_striteri(char *s, void (*f)(unsigned int, char*));
 char			*ft_strjoin(char const *s1, char const *s2);
+char			*ft_strjoin_free(char *s1, char *s2);
 size_t			ft_strlcat(char *dst, const char *src, size_t dsize);
 size_t			ft_strlcpy(char *dst, const char *src, size_t dsize);
 size_t			ft_strlen(const char *s);
 char			*ft_strmapi(char const *s, char (*f)(unsigned int, char));
+int				ft_strcmp(const char *s1, const char *s2);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
 char			*ft_strnstr(const char *base, const char *target, size_t len);
 char			*ft_strrchr(const char *s, int c);
@@ -109,6 +114,8 @@ void			ft_dlstdelone(t_dlist *lst, void (*del)(void *));
 void			ft_dlstclear(t_dlist **lst, void (*del)(void *));
 void			ft_dlstiter(t_dlist *lst, void (*f)(void *));
 t_dlist			*ft_dlstmap(t_dlist *lst, void *(*f)(void *),
+					void (*del)(void *));
+void			ft_dlstremove(t_dlist **head, t_dlist *to_remove,
 					void (*del)(void *));
 
 // gnl

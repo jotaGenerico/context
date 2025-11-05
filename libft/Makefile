@@ -48,9 +48,11 @@ CONVERSION_SRC	= ft_ato_bin.c \
 		ft_utoa_base.c
 
 CTYPE_SRC	= ft_isalnum.c \
+		ft_isalnum_or_underscore.c \
 		ft_isalpha.c \
 		ft_isascii.c \
 		ft_isdigit.c \
+		ft_isnumeric.c \
 		ft_isprint.c \
 		ft_isspace.c \
 		ft_tolower.c \
@@ -64,7 +66,8 @@ DLIST_SRC	= ft_dlstnew.c \
 		ft_dlstdelone.c \
 		ft_dlstclear.c \
 		ft_dlstiter.c \
-		ft_dlstmap.c
+		ft_dlstmap.c \
+		ft_dlstremove.c
 
 GNL_SRC		= get_next_line.c \
 		get_next_line_utils.c
@@ -109,13 +112,15 @@ PRINTF_SRC	= ft_buffer.c \
 		ft_parser.c \
 		ft_precision_num.c \
 		ft_precision_str.c \
-		ft_printf.c
+		ft_printf.c \
+		ft_dprintf.c
 
 STRING_SRC	= ft_strchr.c \
 		ft_strdup.c \
 		ft_strlcat.c \
 		ft_strlcpy.c \
 		ft_strlen.c \
+		ft_strcmp.c \
 		ft_strncmp.c \
 		ft_strnstr.c \
 		ft_strrchr.c
@@ -124,6 +129,7 @@ UTILS_SRC	= ft_count_digits.c \
 		ft_split.c \
 		ft_striteri.c \
 		ft_strjoin.c \
+		ft_strjoin_free.c \
 		ft_strmapi.c \
 		ft_strtrim.c \
 		ft_substr.c

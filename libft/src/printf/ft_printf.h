@@ -38,6 +38,7 @@ typedef struct s_buffer
 	char	buf[PF_SIZE];
 	int		index;
 	int		printed_count;
+	int		fd;
 }	t_buffer;
 
 typedef struct s_print_context
@@ -47,6 +48,7 @@ typedef struct s_print_context
 }	t_print_context;
 
 int		ft_printf(const char *format, ...);
+int		ft_dprintf(int fd, const char *format, ...);
 int		ft_parse_format(const char *s, int *i, t_format *fmt, va_list args);
 char	*ft_handle_char(t_format *fmt, va_list args);
 char	*ft_handle_string(t_format *fmt, va_list args);

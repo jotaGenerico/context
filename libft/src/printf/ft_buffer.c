@@ -16,7 +16,7 @@ void	ft_flush_buffer(t_buffer *buffer)
 {
 	if (buffer->index > 0)
 	{
-		write(1, buffer->buf, buffer->index);
+		write(buffer->fd, buffer->buf, buffer->index);
 		buffer->index = 0;
 	}
 }

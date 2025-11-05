@@ -27,6 +27,7 @@ int	ft_printf(const char *format, ...)
 	t_print_context	ctx;
 
 	va_start(args, format);
+	buffer.fd = 1;
 	buffer.index = 0;
 	buffer.printed_count = 0;
 	i = 0;
