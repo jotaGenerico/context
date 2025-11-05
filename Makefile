@@ -25,8 +25,7 @@ INCLUDES	= -I$(INC_DIR) -I$(LIBFT_DIR)/include
 CORE_SRCS	= $(SRC_DIR)/core/main.c \
 			  $(SRC_DIR)/core/init.c \
 			  $(SRC_DIR)/core/signals.c \
-			  $(SRC_DIR)/core/shell_utils.c \
-			  $(SRC_DIR)/core/termios.c
+			  $(SRC_DIR)/core/shell_utils.c
 
 # --- Lexer ---
 LEXER_SRCS	= $(SRC_DIR)/lexer/lexer.c \
