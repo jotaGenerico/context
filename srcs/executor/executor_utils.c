@@ -47,10 +47,22 @@ void	restore_std_fds(int sv_in, int sv_out, int sv_err)
 }
 
 /* ************************************************************************** */
-/* COMMAND PATH FINDER                               */
+/* COMMAND PATH FINDER                                                        */
 /* ************************************************************************** */
 
-// FUNÇÃO 4/5
+/* Helper global — mantém */
+bool	is_directory(const char *path)
+{
+	struct stat	sb;
+
+	if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode))
+		return (true);
+	return (false);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Encontra o caminho completo de um comando                                 */
+/* -------------------------------------------------------------------------- */
 char	*find_command_path(const char *cmd, t_shell *shell)
 {
 	char	*path_var;
@@ -58,28 +70,34 @@ char	*find_command_path(const char *cmd, t_shell *shell)
 	char	*full_path;
 	int		i;
 
+	/* Caso contenha '/', verifica diretamente */
 	if (ft_strchr(cmd, '/'))
 	{
-		if (access(cmd, X_OK) == 0)
+		/* ⚠️ NÃO BLOQUEIA DIRETÓRIO AQUI — child_exec decide */
+		if (access(cmd, F_OK) == 0)
 			return (ft_strdup(cmd));
 		return (NULL);
 	}
-	path_var = get_env_value("PATH", shell); // get_env_value em env_utils.c
+
+	/* Busca no PATH */
+	path_var = get_env_value("PATH", shell);
 	if (!path_var)
 		return (NULL);
 	path_dirs = ft_split(path_var, ':');
 	if (!path_dirs)
 		return (NULL);
+
 	i = 0;
 	while (path_dirs[i])
 	{
 		full_path = ft_strjoin3(path_dirs[i], "/", cmd);
 		if (!full_path)
-			return (free_char_array(path_dirs), NULL); // free_char_array em env_utils.c
-		if (access(full_path, X_OK) == 0)
+			return (free_char_array(path_dirs), NULL);
+		if (access(full_path, X_OK) == 0 && !is_directory(full_path))
 			return (free_char_array(path_dirs), full_path);
 		free(full_path);
 		i++;
 	}
-	return (free_char_array(path_dirs), NULL);
+	free_char_array(path_dirs);
+	return (NULL);
 }

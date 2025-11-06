@@ -4,7 +4,7 @@
 
 # --- Nomes e Caminhos ---
 NAME		= minishell
-CC		= cc
+CC			= cc
 CFLAGS		= -Wall -Wextra -Werror -g
 LDFLAGS		= -lreadline
 
@@ -54,6 +54,7 @@ EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 			  $(SRC_DIR)/executor/exec_pipeline.c \
 			  $(SRC_DIR)/executor/exec_and_or.c \
 			  $(SRC_DIR)/executor/exec_subshell.c \
+			  $(SRC_DIR)/executor/exec_heredoc.c \
 			  $(SRC_DIR)/executor/exec_builtin.c \
 			  $(SRC_DIR)/executor/pipe/pipe.c \
 			  $(SRC_DIR)/executor/pipe/pipe_utils.c \
@@ -71,8 +72,6 @@ EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 # --- Utils ---
 UTIL_SRCS	= $(SRC_DIR)/utils/error_utils.c \
 			  $(SRC_DIR)/utils/free_utils.c \
-			  $(SRC_DIR)/utils/print_debug.c \
-			  $(SRC_DIR)/utils/string_utils.c \
 			  $(SRC_DIR)/utils/env_utils.c
 
 

@@ -16,6 +16,7 @@ t_ast	*ast_new_node(t_node_type type, t_ast *left, t_ast *right)
 	node->type = type;
 	node->argv = NULL;
 	node->filename = NULL;
+	node->heredoc_fd = -1; // Inicializa o FD do heredoc
 	node->left = left;
 	node->right = right;
 	return (node);

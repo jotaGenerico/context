@@ -10,6 +10,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
@@ -154,6 +155,7 @@ char		*find_command_path(const char *cmd, t_shell *shell);
 int			apply_redirections(t_ast *node, t_shell *shell);
 int			handle_heredocs(t_ast *node, t_shell *shell);
 int			handle_assignment_only(t_ast *node, t_shell *shell);
+bool		is_directory(const char *path);
 
 /* Em seu minishell.h (ou arquivo de cabeçalho pertinente) */
 

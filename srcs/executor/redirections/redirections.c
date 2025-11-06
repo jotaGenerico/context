@@ -68,37 +68,32 @@ static int	open_outfile_append(t_ast *node)
 }
 
 /* ************************************************************************** */
-/* HEREDOC HANDLER                                  */
+/* HEREDOC HANDLER (MODIFICADO)                               */
 /* ************************************************************************** */
 
-static int	open_heredoc(t_ast *node)
+/*
+ * Esta função aplica o FD do heredoc (preenchido por handle_heredocs)
+ * ao STDIN. A leitura real do heredoc NÃO acontece aqui.
+ */
+static int	apply_heredoc(t_ast *node)
 {
-	int		pipe_fd[2];
-	char	*line;
-
-	if (pipe(pipe_fd) == -1)
-		return (perror("pipe"), -1);
-	while (1)
+	// Verifica se o FD é válido (definido em handle_heredocs)
+	if (node->heredoc_fd < 0)
 	{
-		line = readline("> ");
-		if (!line)
-			break ;
-		if (ft_strcmp(line, node->filename) == 0)
-		{
-			free(line);
-			break ;
-		}
-		ft_putendl_fd(line, pipe_fd[1]);
-		free(line);
-	}
-	close(pipe_fd[1]);
-	if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-	{
-		perror("dup2");
-		close(pipe_fd[0]);
+		ft_dprintf(2, "minishell: erro interno de heredoc (fd inválido)\n");
 		return (-1);
 	}
-	close(pipe_fd[0]);
+
+	// Redireciona o STDIN para ler do pipe do heredoc
+	if (dup2(node->heredoc_fd, STDIN_FILENO) == -1)
+	{
+		perror("dup2");
+		close(node->heredoc_fd); // Fecha o FD em caso de erro
+		return (-1);
+	}
+
+	// Fecha o FD original (o duplicado continua aberto em STDIN)
+	close(node->heredoc_fd);
 	return (0);
 }
 
@@ -114,7 +109,7 @@ int	apply_redirections(t_ast *node, t_shell *shell)
 	if (!node)
 		return (0);
 
-	// Corrigido para incluir a recursão (ausente no snippet original)
+	// Corrigido para incluir a recursão
 	if (node->left)
 	{
 		if (apply_redirections(node->left, shell) != 0)
@@ -129,7 +124,7 @@ int	apply_redirections(t_ast *node, t_shell *shell)
 	else if (node->type == NODE_REDIR_APPEND)
 		status = open_outfile_append(node);
 	else if (node->type == NODE_HEREDOC)
-		status = open_heredoc(node);
+		status = apply_heredoc(node); // Modificado
 
 	if (node->right && status == 0)
 		status = apply_redirections(node->right, shell);

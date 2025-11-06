@@ -20,14 +20,17 @@ static void	shell_loop(t_shell *shell)
 		shell->token_list = lexer(line);
 		free(line);
 		if (!shell->token_list)
-			continue ; // Volta para o início do loop em caso de erro
+			continue ;
 
 		// 4. EXPANDER: Expande variáveis de ambiente e remove aspas
 		expand_tokens(shell->token_list, shell);
 
 		// 5. PARSER: Constrói a Árvore de Sintaxe Abstrata (AST)
 		ast = parse_tokens(shell->token_list);
-		// A lista de tokens é liberada pelo parser, ou se ele falhar (ast_free(NULL))
+
+		// 5.5. HEREDOCS: Processa todos os heredocs antes da execução
+		// (Esta é a correção principal de arquitetura)
+		handle_heredocs(ast, shell);
 
 		// 6. EXECUTE: Executa a AST
 		if (ast)

@@ -26,6 +26,6 @@ int	execute_ast(t_ast *node, t_shell *shell)
 	{
 		execute_ast(node->left, shell);
 		return (execute_ast(node->right, shell));
-    }
+	}
 	return (1);
 }
