@@ -120,7 +120,7 @@ static int	exec_builtin_parent(t_ast *node, t_shell *shell)
 int	exec_simple_cmd(t_ast *node, t_shell *shell)
 {
 	pid_t	pid;
-	int	    status;
+	int		status;
 	t_ast	*cmd_node;
 
 	if (!node)
@@ -133,7 +133,19 @@ int	exec_simple_cmd(t_ast *node, t_shell *shell)
 	if (!cmd_node || !cmd_node->argv || !cmd_node->argv[0])
 		return (0);
 
-	// 2. Checa e executa a atribuição de variável local (ex: VAR=VALOR)
+	// =======================================================
+	// 2. EXPANSÃO DE VARIÁVEIS (ASSUMIDO QUE ESTÁ AQUI)
+	expand_variables(cmd_node->argv, shell);
+
+	// 3. EXPANSÃO DE WILDCARD (BÔNUS!)
+	if (expand_wildcards(&(cmd_node->argv)) != 0) // Passa o endereço para reescrever o array
+	{
+		shell->exit_status = 1; // Erro de alocação/interno
+		return (shell->exit_status);
+	}
+	// =======================================================
+
+	// 4. Checa e executa a atribuição de variável local (ex: VAR=VALOR)
 	if (handle_assignment_only(cmd_node, shell))
 		return (shell->exit_status);
 

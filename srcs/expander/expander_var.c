@@ -1,5 +1,3 @@
-// Arquivo: srcs/expander/expander_var.c
-
 #include "minishell.h"
 
 static char	*get_exit_status(t_shell *shell)
@@ -96,4 +94,25 @@ char	*expand_word(char *word, t_shell *shell)
 		}
 	}
 	return (result);
+}
+
+void	expand_variables(char **argv, t_shell *shell)
+{
+	int		i;
+	char	*expanded_word;
+
+	i = 0;
+	while (argv[i])
+	{
+		// Chama a função expand_word (que existe neste arquivo)
+		expanded_word = expand_word(argv[i], shell);
+
+		// TODO: Adicione tratamento de erro de alocação aqui
+		if (!expanded_word)
+			return;
+
+		free(argv[i]); // Libera a string antiga
+		argv[i] = expanded_word; // Substitui pela nova string expandida
+		i++;
+	}
 }

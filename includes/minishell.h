@@ -13,6 +13,8 @@
 # include <sys/stat.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <sys/types.h>
+# include <dirent.h>
 
 /* Libft */
 # include "libft.h"
@@ -126,6 +128,9 @@ void		expand_tokens(t_dlist *tokens, t_shell *shell);
 char 		*expand_word(char *word, t_shell *shell);
 char		*get_env_value(char *key, t_shell *shell);
 int			get_var_name_len(char *str);
+int			is_glob_match(const char *pattern, const char *text);
+void		expand_variables(char **argv, t_shell *shell);
+int			expand_wildcards(char ***argv_ptr);
 
 /* ----------------------------- PARSER ----------------------------- */
 t_ast		*parse_tokens(t_dlist *tokens);
