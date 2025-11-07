@@ -71,8 +71,7 @@ EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 			$(SRC_DIR)/executor/builtin/builtin_utils.c
 
 # --- Utils ---
-UTIL_SRCS	= $(SRC_DIR)/utils/env_utils.c \
-			$(SRC_DIR)/utils/free_utils.c
+UTIL_SRCS	= $(SRC_DIR)/utils/env_utils.c
 
 # --- Lista geral ---
 SRCS		= $(CORE_SRCS) $(LEXER_SRCS) $(EXP_SRCS) $(PARSE_SRCS) $(EXEC_SRCS) $(UTIL_SRCS)
