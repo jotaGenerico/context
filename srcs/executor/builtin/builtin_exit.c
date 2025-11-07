@@ -12,13 +12,18 @@ int	builtin_exit(char **argv, t_shell *shell)
 
 	ft_putendl_fd("exit", 1);
 	if (!argv[1])
+	{
+		free_char_array(argv);
 		exit(shell->exit_status);
+	}
 
 	if (!ft_isnumeric(argv[1]))
 	{
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putendl_fd(": numeric argument required", 2);
+		cleanup_shell(shell);
+		free_char_array(argv);
 		exit(255);
 	}
 	if (argv[2])
@@ -28,5 +33,6 @@ int	builtin_exit(char **argv, t_shell *shell)
 	}
 	code = ft_atoi(argv[1]) % 256;
 	cleanup_shell(shell);
+	free_char_array(argv);
 	exit(code);
 }

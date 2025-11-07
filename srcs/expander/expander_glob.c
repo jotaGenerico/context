@@ -112,6 +112,7 @@ int	expand_wildcards(char ***argv_ptr)
 	char	**old_argv;
 	t_list	*new_arg_list;
 	t_list	*matches;
+	t_list	*temp;
 	int		i;
 
 	old_argv = *argv_ptr;
@@ -125,8 +126,14 @@ int	expand_wildcards(char ***argv_ptr)
 			matches = get_glob_matches(old_argv[i]); // Pega lista de arquivos (já com strdup)
 			if (matches)
 			{
-				// Adiciona as correspondências ao final da lista de novos argumentos
-				ft_lstadd_back(&new_arg_list, matches);
+				// Transfere cada nó individualmente
+				while (matches)
+				{
+					temp = matches;
+					matches = matches->next;
+					temp->next = NULL; // Isola o nó
+					ft_lstadd_back(&new_arg_list, temp);
+				}
 				i++;
 				continue ;
 			}
@@ -143,8 +150,14 @@ int	expand_wildcards(char ***argv_ptr)
 	// 4. Cria o novo array (char**) e substitui o antigo
 	*argv_ptr = ft_lst_to_array(new_arg_list);
 
-	// 5. Libera a estrutura da lista ligada (apenas os nós, o conteúdo foi NULLificado)
-	ft_lstclear(&new_arg_list, NULL);
+	// 5. Libera a estrutura da lista ligada (apenas os nós)
+	// CORREÇÃO CRÍTICA APLICADA: Liberação manual para evitar leak do nó
+	while (new_arg_list)
+	{
+		temp = new_arg_list;
+		new_arg_list = new_arg_list->next;
+		free(temp); // Libera apenas o nó, o conteúdo já foi transferido
+	}
 
 	if (!*argv_ptr)
 	{
@@ -152,4 +165,4 @@ int	expand_wildcards(char ***argv_ptr)
 		return (1);
 	}
 	return (0);
-}
+} // <--- A chave final estava faltando.

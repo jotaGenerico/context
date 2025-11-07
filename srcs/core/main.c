@@ -28,6 +28,10 @@ static void	shell_loop(t_shell *shell)
 		// 5. PARSER: Constrói a Árvore de Sintaxe Abstrata (AST)
 		ast = parse_tokens(shell->token_list);
 
+		// ✅ CORREÇÃO LEAK 1: Libera tokens após o parse
+		ft_dlstclear(&shell->token_list, free_tokens);
+		shell->token_list = NULL;
+
 		// 5.5. HEREDOCS: Processa todos os heredocs antes da execução
 		// (Esta é a correção principal de arquitetura)
 		handle_heredocs(ast, shell);
