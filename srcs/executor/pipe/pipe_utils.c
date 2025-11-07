@@ -1,15 +1,5 @@
 #include "minishell.h"
 
-/* ************************************************************************** */
-/*                           PIPE UTILS                                       */
-/* ************************************************************************** */
-
-/*
- * Aloca um array linear de pipes: int *pipes = malloc(sizeof(int) * 2 * n_pipes)
- * Cada pipe i terá:
- *  read  = pipes[2*i + 0]
- *  write = pipes[2*i + 1]
- */
 int	*alloc_pipes(int n_pipes)
 {
 	int	*pipes;
@@ -39,7 +29,6 @@ int	*alloc_pipes(int n_pipes)
 	return (pipes);
 }
 
-/* Fecha e libera todos os pipes */
 void	free_pipes(int *pipes, int n_pipes)
 {
 	int	i;
@@ -56,7 +45,6 @@ void	free_pipes(int *pipes, int n_pipes)
 	free(pipes);
 }
 
-/* Fecha todos os pipes sem liberar memória (para uso nos filhos) */
 void	close_all_pipes(int *pipes, int n_pipes)
 {
 	int	i;
@@ -72,7 +60,6 @@ void	close_all_pipes(int *pipes, int n_pipes)
 	}
 }
 
-/* Aloca vetor de pids */
 pid_t	*alloc_pids(int n)
 {
 	if (n <= 0)
@@ -80,9 +67,6 @@ pid_t	*alloc_pids(int n)
 	return (malloc(sizeof(pid_t) * n));
 }
 
-/*
- * Espera todos os processos da pipeline e retorna o status do último.
- */
 int	wait_for_children(pid_t *pids, int n, t_shell *shell)
 {
 	int	i;
