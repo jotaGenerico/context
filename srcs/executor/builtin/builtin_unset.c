@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-/* builtin_unset: remove variáveis de ambiente */
 int	builtin_unset(char **argv, t_shell *shell)
 {
 	int			i;

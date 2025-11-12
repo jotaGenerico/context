@@ -12,17 +12,13 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
-/* -------------------------------------------------------------------------- */
-/*                           SIGNALS INITIALIZATION                           */
-/* -------------------------------------------------------------------------- */
-
 void	setup_signals(void)
 {
 	struct sigaction	sa;
 
 	ft_bzero(&sa, sizeof(sa));
 	sa.sa_handler = handle_sigint;
-	sa.sa_flags = SA_RESTART; // readline-friendly
+	sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
 }

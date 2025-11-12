@@ -1,15 +1,11 @@
 #include "minishell.h"
 
+static int	exec_sequence_node(t_ast *node, t_shell *shell);
+
 int	execute_ast(t_ast *node, t_shell *shell)
 {
 	if (!node)
 		return (1);
-	/*
-	 * O nó raiz do comando pode ser NODE_COMMAND ou um NODE_REDIR_*
-	 * Redirecionamentos são a raiz da AST quando aparecem primeiro,
-	 * mas o executor trata todos como um 'simple_cmd' único que
-	 * contém sua própria lógica de redireção/execução.
-	 */
 	if (node->type == NODE_COMMAND
 		|| node->type == NODE_REDIR_IN
 		|| node->type == NODE_REDIR_OUT
@@ -23,9 +19,12 @@ int	execute_ast(t_ast *node, t_shell *shell)
 	if (node->type == NODE_SUBSHELL)
 		return (exec_subshell(node, shell));
 	if (node->type == NODE_SEQUENCE)
-	{
-		execute_ast(node->left, shell);
-		return (execute_ast(node->right, shell));
-	}
+		return (exec_sequence_node(node, shell));
 	return (1);
+}
+
+static int	exec_sequence_node(t_ast *node, t_shell *shell)
+{
+	execute_ast(node->left, shell);
+	return (execute_ast(node->right, shell));
 }

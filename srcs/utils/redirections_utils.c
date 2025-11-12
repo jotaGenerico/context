@@ -36,14 +36,14 @@ void	free_redirections(t_ast *node)
 	free(node);
 }
 
-bool	has_redirections(t_ast *node)
+int	has_redirections(t_ast *node)
 {
 	if (!node)
-		return (false);
+		return (0);
 	if (node->type == NODE_REDIR_IN
 		|| node->type == NODE_REDIR_OUT
 		|| node->type == NODE_REDIR_APPEND
 		|| node->type == NODE_HEREDOC)
-		return (true);
+		return (1);
 	return (has_redirections(node->left) || has_redirections(node->right));
 }

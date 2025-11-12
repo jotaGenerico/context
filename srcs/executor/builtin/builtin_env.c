@@ -2,8 +2,8 @@
 
 int	builtin_env(t_shell *shell)
 {
-	t_dlist	*lst;
-	t_env_var *var;
+	t_dlist		*lst;
+	t_env_var	*var;
 
 	lst = shell->env_list;
 	while (lst)

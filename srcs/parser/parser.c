@@ -1,5 +1,26 @@
 #include "minishell.h"
 
+t_ast	*ast_new_node(t_node_type type, t_ast *left, t_ast *right)
+{
+	t_ast	*node;
+
+	node = malloc(sizeof(t_ast));
+	if (!node)
+		return (NULL);
+	node->type = type;
+	node->argv = NULL;
+	node->filename = NULL;
+	node->heredoc_fd = -1;
+	node->left = left;
+	node->right = right;
+	return (node);
+}
+
+t_ast	*parse_list(t_dlist **tokens)
+{
+	return (parse_and_or(tokens));
+}
+
 t_ast	*parse_tokens(t_dlist *tokens)
 {
 	t_ast	*root;
@@ -21,36 +42,4 @@ t_ast	*parse_tokens(t_dlist *tokens)
 		return (NULL);
 	}
 	return (root);
-}
-
-t_ast	*parse_list(t_dlist **tokens)
-{
-	t_ast	*left;
-	t_ast	*right;
-	t_token	*token;
-
-	left = parse_and_or(tokens);
-	if (!left)
-		return (NULL);
-	while (*tokens)
-	{
-		token = (*tokens)->content;
-		if (token->type == TOKEN_SEMICOLON)
-		{
-			*tokens = (*tokens)->next;
-			right = parse_and_or(tokens);
-			if (!right)
-			{
-				ft_putendl_fd("minishell: syntax error near unexpected token `;'", 2);
-				ast_free(left);
-				return (NULL);
-			}
-			left = ast_new_node(NODE_SEQUENCE, left, right);
-			if (!left)
-				return (NULL);
-		}
-		else
-			break ;
-	}
-	return (left);
 }

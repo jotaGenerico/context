@@ -1,45 +1,34 @@
 #include "minishell.h"
 
-bool	is_operator(char *line, int i)
+static t_token_type	get_pipe_and_semicolon_type(char *line, int *i);
+static t_token_type	get_operator_type(char *line, int *i);
+static t_token_type	get_redir_and_paren_type(char *line, int *i);
+
+t_token	*create_operator_token(char *line, int *i)
 {
-	if (line[i] == '|' || line[i] == '<' || line[i] == '>'
-		|| line[i] == '(' || line[i] == ')' || line[i] == '&'
-		|| line[i] == ';')
-		return (true);
-	return (false);
+	t_token_type	type;
+	char			*value;
+	int				start;
+	int				len;
+
+	start = *i;
+	type = get_operator_type(line, i);
+	if (type == TOKEN_ERROR)
+		return (NULL);
+	len = *i - start;
+	if (len == 0)
+	{
+		len = 1;
+		(*i)++;
+	}
+	value = ft_substr(line, start, len);
+	if (!value)
+		return (NULL);
+	return (create_token(type, value));
 }
 
-static t_token_type	get_operator_type(char *line, int *i)
+static t_token_type	get_redir_and_paren_type(char *line, int *i)
 {
-	if (line[*i] == '|')
-	{
-		if (line[*i + 1] == '|')
-		{
-			(*i)++;
-			return (TOKEN_OR);
-		}
-		return (TOKEN_PIPE);
-	}
-	if (line[*i] == '&')
-	{
-		if (line[*i + 1] == '&')
-		{
-			(*i)++;
-			return (TOKEN_AND);
-		}
-		// '&' isolado não é permitido, conforme seu código:
-		ft_putendl_fd("minishell: syntax error near unexpected token `&'", 2);
-		return (TOKEN_ERROR);
-	}
-
-    // >>> INSERÇÃO DA CORREÇÃO PARA O PONTO E VÍRGULA <<<
-	if (line[*i] == ';')
-	{
-		// O ponto e vírgula é um separador de comando de um único caractere
-		return (TOKEN_SEMICOLON);
-	}
-	// >>> FIM DA INSERÇÃO <<<
-
 	if (line[*i] == '<')
 	{
 		if (line[*i + 1] == '<')
@@ -60,28 +49,41 @@ static t_token_type	get_operator_type(char *line, int *i)
 	}
 	if (line[*i] == '(')
 		return (TOKEN_LPAREN);
-	return (TOKEN_RPAREN);
+	if (line[*i] == ')')
+		return (TOKEN_RPAREN);
+	return (TOKEN_ERROR);
 }
 
-t_token	*create_operator_token(char *line, int *i)
+static t_token_type	get_operator_type(char *line, int *i)
 {
 	t_token_type	type;
-	char			*value;
-	int				len;
-	int				start;
 
-	start = *i;
-	type = get_operator_type(line, i);
-	if (type == TOKEN_ERROR)
-		return (NULL);
-	if (type == TOKEN_OR || type == TOKEN_HEREDOC
-		|| type == TOKEN_REDIR_APPEND || type == TOKEN_AND)
-		len = 2;
-	else
-		len = 1;
-	value = ft_substr(line, start, len);
-	if (!value)
-		return (NULL);
-	(*i)++;
-	return (create_token(type, value));
+	type = get_pipe_and_semicolon_type(line, i);
+	if (type != TOKEN_ERROR)
+		return (type);
+	if (line[*i] == '&')
+	{
+		if (line[*i + 1] == '&')
+		{
+			(*i)++;
+			return (TOKEN_AND);
+		}
+		ft_putendl_fd("minishell: syntax error near unexpected token '&'", 2);
+		return (TOKEN_ERROR);
+	}
+	return (get_redir_and_paren_type(line, i));
+}
+
+static t_token_type	get_pipe_and_semicolon_type(char *line, int *i)
+{
+	if (line[*i] == '|')
+	{
+		if (line[*i + 1] == '|')
+		{
+			(*i)++;
+			return (TOKEN_OR);
+		}
+		return (TOKEN_PIPE);
+	}
+	return (TOKEN_ERROR);
 }

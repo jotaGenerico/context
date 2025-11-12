@@ -4,7 +4,7 @@
 
 # --- Nomes e Caminhos ---
 NAME		= minishell
-CC			= cc
+CC		= cc
 CFLAGS		= -Wall -Wextra -Werror -g
 LDFLAGS		= -lreadline
 
@@ -23,25 +23,24 @@ INCLUDES	= -I$(INC_DIR) -I$(LIBFT_DIR)/include
 
 # --- Core ---
 CORE_SRCS	= $(SRC_DIR)/core/main.c \
+			$(SRC_DIR)/core/env.c \
 			$(SRC_DIR)/core/init.c \
-			$(SRC_DIR)/core/signals.c \
-			$(SRC_DIR)/core/shell_utils.c
+			$(SRC_DIR)/core/signals.c
 
 # --- Lexer ---
 LEXER_SRCS	= $(SRC_DIR)/lexer/lexer.c \
-			$(SRC_DIR)/lexer/lexer_utils.c \
+			$(SRC_DIR)/lexer/lexer_operators.c \
 			$(SRC_DIR)/lexer/lexer_quotes.c \
-			$(SRC_DIR)/lexer/lexer_operators.c
+			$(SRC_DIR)/lexer/lexer_words.c
 
 # --- Expander ---
-EXP_SRCS	= $(SRC_DIR)/expander/expander.c \
+EXP_SRCS	= $(SRC_DIR)/expander/expander_glob.c \
 			$(SRC_DIR)/expander/expander_var.c \
-			$(SRC_DIR)/expander/expander_utils.c \
-			$(SRC_DIR)/expander/expander_glob.c
+			$(SRC_DIR)/expander/expander_word.c \
+			$(SRC_DIR)/expander/expander.c
 
 # --- Parser ---
 PARSE_SRCS	= $(SRC_DIR)/parser/parser.c \
-			$(SRC_DIR)/parser/parser_utils.c \
 			$(SRC_DIR)/parser/parse_and_or.c \
 			$(SRC_DIR)/parser/parse_pipeline.c \
 			$(SRC_DIR)/parser/parse_subshell.c \
@@ -49,29 +48,41 @@ PARSE_SRCS	= $(SRC_DIR)/parser/parser.c \
 
 # --- Executor ---
 EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
-			$(SRC_DIR)/executor/executor_utils.c \
 			$(SRC_DIR)/executor/exec_simple_cmd.c \
-			$(SRC_DIR)/executor/exec_simple_cmd_utils.c \
+			$(SRC_DIR)/executor/exec_cmd_process.c \
+			$(SRC_DIR)/executor/exec_cmd_path.c \
+			$(SRC_DIR)/executor/exec_simple_cmd_assignment.c \
 			$(SRC_DIR)/executor/exec_pipeline.c \
 			$(SRC_DIR)/executor/exec_and_or.c \
 			$(SRC_DIR)/executor/exec_subshell.c \
 			$(SRC_DIR)/executor/exec_heredoc.c \
 			$(SRC_DIR)/executor/exec_builtin.c \
 			$(SRC_DIR)/executor/pipe/pipe.c \
-			$(SRC_DIR)/executor/pipe/pipe_utils.c \
+			$(SRC_DIR)/executor/pipe/pipe_fork.c \
+			$(SRC_DIR)/executor/pipe/pipe_setup.c \
 			$(SRC_DIR)/executor/redirections/redirections.c \
-			$(SRC_DIR)/executor/redirections/redirections_utils.c \
 			$(SRC_DIR)/executor/builtin/builtin_cd.c \
 			$(SRC_DIR)/executor/builtin/builtin_echo.c \
 			$(SRC_DIR)/executor/builtin/builtin_env.c \
 			$(SRC_DIR)/executor/builtin/builtin_exit.c \
 			$(SRC_DIR)/executor/builtin/builtin_pwd.c \
 			$(SRC_DIR)/executor/builtin/builtin_export.c \
-			$(SRC_DIR)/executor/builtin/builtin_unset.c \
-			$(SRC_DIR)/executor/builtin/builtin_utils.c
+			$(SRC_DIR)/executor/builtin/builtin_unset.c
 
 # --- Utils ---
-UTIL_SRCS	= $(SRC_DIR)/utils/env_utils.c
+UTIL_SRCS	= $(SRC_DIR)/utils/builtin_export_utils.c \
+			$(SRC_DIR)/utils/builtin_utils.c \
+			$(SRC_DIR)/utils/core_utils.c \
+			$(SRC_DIR)/utils/executor_utils.c \
+			$(SRC_DIR)/utils/expander_glob_utils.c \
+			$(SRC_DIR)/utils/expander_utils.c \
+			$(SRC_DIR)/utils/free/ast_free.c \
+			$(SRC_DIR)/utils/free/dlist_free.c \
+			$(SRC_DIR)/utils/free/free_array.c \
+			$(SRC_DIR)/utils/lexer_utils.c \
+			$(SRC_DIR)/utils/pipe_utils.c \
+			$(SRC_DIR)/utils/redirections_utils.c \
+			$(SRC_DIR)/utils/shell_utils.c
 
 # --- Lista geral ---
 SRCS		= $(CORE_SRCS) $(LEXER_SRCS) $(EXP_SRCS) $(PARSE_SRCS) $(EXEC_SRCS) $(UTIL_SRCS)
