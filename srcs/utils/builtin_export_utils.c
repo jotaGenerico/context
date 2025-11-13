@@ -8,10 +8,9 @@ static void	export_key_value(char *arg, t_shell *shell)
 
 	eq = ft_strchr(arg, '=');
 	key = ft_substr(arg, 0, eq - arg);
-	value = ft_strdup(eq + 1);
+	value = eq + 1;
 	set_env_var(shell, key, value);
 	free(key);
-	free(value);
 }
 
 int	process_exports(char **argv, t_shell *shell)

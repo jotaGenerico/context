@@ -65,14 +65,20 @@ static int	process_quote_state(char c, int *in_squote, int *in_dquote)
 	if (c == '\'')
 	{
 		if (!*in_dquote)
+		{
 			*in_squote = !*in_squote;
+			return (1);
+		}
 		return (0);
 	}
 	if (c == '"')
 	{
 		if (!*in_squote)
-			*in_dquote = !*in_squote;
-		return (1);
+		{
+			*in_dquote = !*in_dquote;
+			return (1);
+		}
+		return (0);
 	}
 	return (0);
 }

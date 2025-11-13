@@ -36,7 +36,6 @@ static void	shell_loop(t_shell *shell)
 		free(line);
 		if (!shell->token_list)
 			continue ;
-		expand_tokens(shell->token_list, shell);
 		ast = parse_tokens(shell->token_list);
 		ft_dlstclear(&shell->token_list, free_tokens);
 		shell->token_list = NULL;

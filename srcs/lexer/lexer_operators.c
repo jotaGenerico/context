@@ -9,19 +9,13 @@ t_token	*create_operator_token(char *line, int *i)
 	t_token_type	type;
 	char			*value;
 	int				start;
-	int				len;
 
 	start = *i;
 	type = get_operator_type(line, i);
 	if (type == TOKEN_ERROR)
 		return (NULL);
-	len = *i - start;
-	if (len == 0)
-	{
-		len = 1;
-		(*i)++;
-	}
-	value = ft_substr(line, start, len);
+	(*i)++;
+	value = ft_substr(line, start, *i - start);
 	if (!value)
 		return (NULL);
 	return (create_token(type, value));
