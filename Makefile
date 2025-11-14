@@ -73,6 +73,7 @@ EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 UTIL_SRCS	= $(SRC_DIR)/utils/builtin_export_utils.c \
 			$(SRC_DIR)/utils/builtin_utils.c \
 			$(SRC_DIR)/utils/core_utils.c \
+			$(SRC_DIR)/utils/exec_simple_cmd_utils.c \
 			$(SRC_DIR)/utils/executor_utils.c \
 			$(SRC_DIR)/utils/expander_glob_utils.c \
 			$(SRC_DIR)/utils/expander_utils.c \
@@ -131,10 +132,11 @@ fclean: clean
 
 re: fclean all
 
+valgrind: $(NAME)
+	@echo "\033[1;36m[VALGRIND]\033[0m Executando análise de memória...\n"
+	valgrind --suppressions=readline.sup --track-fds=yes \
+		--leak-check=full --show-leak-kinds=all ./$(NAME)
+
 #valgrind: $(NAME)
 #	valgrind --leak-check=full --show-leak-kinds=all \
-#	--track-origins=yes --suppressions=readline.supp ./$(NAME)
-
-valgrind: $(NAME)
-	valgrind --leak-check=full --show-leak-kinds=all \
-	--track-origins=yes ./$(NAME)
+#	--track-origins=yes ./$(NAME)

@@ -99,10 +99,7 @@ static t_ast	*parse_redirection(t_dlist **tokens, t_token *redir_token)
 	t_token		*file_token;
 
 	if (!(*tokens) || ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
-	{
-		ft_putendl_fd("minishell: syntax error near unexpected token", 2);
 		return (NULL);
-	}
 	file_token = (*tokens)->content;
 	if (redir_token->type == TOKEN_REDIR_IN)
 		redir_node = ast_new_node(NODE_REDIR_IN, NULL, NULL);

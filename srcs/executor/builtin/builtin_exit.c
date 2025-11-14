@@ -3,18 +3,18 @@
 static void	exit_with_error(char *arg, t_shell *shell, char **argv);
 static int	validate_exit_args(char **argv, t_shell *shell);
 
-int	builtin_exit(char **argv, t_shell *shell)
+int	builtin_exit(t_ast *node, t_shell *shell)
 {
 	int	code;
 
 	ft_putendl_fd("exit", 1);
-	if (validate_exit_args(argv, shell) != 0)
+	if (validate_exit_args(node->argv, shell) != 0)
 		return (1);
 	code = shell->exit_status;
-	if (argv[1])
-		code = ft_atoi(argv[1]) % 256;
+	if (node->argv[1])
+		code = ft_atoi(node->argv[1]) % 256;
+	ast_free(node);
 	cleanup_shell(shell);
-	free_char_array(argv);
 	exit(code);
 }
 
