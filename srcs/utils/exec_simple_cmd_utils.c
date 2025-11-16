@@ -47,11 +47,18 @@ int	handle_redirect_only(t_ast *node, t_shell *shell)
 
 int	is_empty_command(char **argv)
 {
-	if (!argv || !argv[0])
+	int	i;
+
+	if (!argv)
 		return (1);
-	if (argv[0][0] == '\0')
-		return (1);
-	return (0);
+	i = 0;
+	while (argv[i])
+	{
+		if (argv[i][0] != '\0')
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 int	exec_builtin_parent(t_ast *node, t_shell *shell)

@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-static char		**argv_add(char **argv, char *new_word);
 static t_ast	*parse_redirection(t_dlist **tokens, t_token *redir_token);
 static int		handle_redirection_token(t_dlist **tokens,
 					t_ast **cmd_node_ptr);
@@ -46,19 +45,22 @@ static int	handle_redirection_token(t_dlist **tokens, t_ast **cmd_node_ptr)
 		return (-1);
 	redir_node->left = *cmd_node_ptr;
 	*cmd_node_ptr = redir_node;
-	*tokens = (*tokens)->next;
 	return (1);
 }
 
 static int	process_next_command_token(t_dlist **tokens, t_ast **cmd_node_ptr)
 {
 	t_token	*token;
+	t_ast	*actual_cmd;
 
 	token = (*tokens)->content;
 	if (token->type == TOKEN_WORD)
 	{
-		(*cmd_node_ptr)->argv = argv_add((*cmd_node_ptr)->argv, token->value);
-		if (!(*cmd_node_ptr)->argv)
+		actual_cmd = get_command_node(*cmd_node_ptr);
+		if (!actual_cmd)
+			actual_cmd = *cmd_node_ptr;
+		actual_cmd->argv = argv_add(actual_cmd->argv, token->value);
+		if (!actual_cmd->argv)
 			return (-1);
 		*tokens = (*tokens)->next;
 		return (1);
@@ -69,48 +71,25 @@ static int	process_next_command_token(t_dlist **tokens, t_ast **cmd_node_ptr)
 		return (0);
 }
 
-static char	**argv_add(char **argv, char *new_word)
-{
-	int		count;
-	int		i;
-	char	**new_argv;
-
-	count = 0;
-	i = 0;
-	while (argv && argv[count])
-		count++;
-	new_argv = malloc(sizeof(char *) * (count + 2));
-	if (!new_argv)
-		return (NULL);
-	while (i < count)
-	{
-		new_argv[i] = argv[i];
-		i++;
-	}
-	new_argv[count] = ft_strdup(new_word);
-	new_argv[count + 1] = NULL;
-	free(argv);
-	return (new_argv);
-}
-
 static t_ast	*parse_redirection(t_dlist **tokens, t_token *redir_token)
 {
 	t_ast		*redir_node;
 	t_token		*file_token;
+	char		*processed_filename;
 
 	if (!(*tokens) || ((t_token *)(*tokens)->content)->type != TOKEN_WORD)
 		return (NULL);
 	file_token = (*tokens)->content;
-	if (redir_token->type == TOKEN_REDIR_IN)
-		redir_node = ast_new_node(NODE_REDIR_IN, NULL, NULL);
-	else if (redir_token->type == TOKEN_REDIR_OUT)
-		redir_node = ast_new_node(NODE_REDIR_OUT, NULL, NULL);
-	else if (redir_token->type == TOKEN_REDIR_APPEND)
-		redir_node = ast_new_node(NODE_REDIR_APPEND, NULL, NULL);
-	else
-		redir_node = ast_new_node(NODE_HEREDOC, NULL, NULL);
-	if (!redir_node)
+	*tokens = (*tokens)->next;
+	processed_filename = process_filename(file_token->value);
+	if (!processed_filename)
 		return (NULL);
-	redir_node->filename = ft_strdup(file_token->value);
+	redir_node = create_redir_node(redir_token->type);
+	if (!redir_node)
+	{
+		free(processed_filename);
+		return (NULL);
+	}
+	redir_node->filename = processed_filename;
 	return (redir_node);
 }

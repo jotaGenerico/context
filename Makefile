@@ -49,8 +49,9 @@ PARSE_SRCS	= $(SRC_DIR)/parser/parser.c \
 # --- Executor ---
 EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 			$(SRC_DIR)/executor/exec_simple_cmd.c \
-			$(SRC_DIR)/executor/exec_cmd_process.c \
+			$(SRC_DIR)/executor/exec_cmd_args.c \
 			$(SRC_DIR)/executor/exec_cmd_path.c \
+			$(SRC_DIR)/executor/exec_cmd_process.c \
 			$(SRC_DIR)/executor/exec_simple_cmd_assignment.c \
 			$(SRC_DIR)/executor/exec_pipeline.c \
 			$(SRC_DIR)/executor/exec_and_or.c \
@@ -81,6 +82,7 @@ UTIL_SRCS	= $(SRC_DIR)/utils/builtin_export_utils.c \
 			$(SRC_DIR)/utils/free/dlist_free.c \
 			$(SRC_DIR)/utils/free/free_array.c \
 			$(SRC_DIR)/utils/lexer_utils.c \
+			$(SRC_DIR)/utils/parse_command_utils.c \
 			$(SRC_DIR)/utils/pipe_utils.c \
 			$(SRC_DIR)/utils/redirections_utils.c \
 			$(SRC_DIR)/utils/shell_utils.c

@@ -2,6 +2,7 @@
 
 static void	execute_external_cmd(t_ast *cmd_node, t_shell *shell);
 static void	child_process(t_ast *node, t_shell *shell);
+static void	handle_path_error(char *cmd, char **envp);
 
 int	execute_forked_cmd(t_ast *node, t_shell *shell)
 {
@@ -36,10 +37,13 @@ static void	execute_external_cmd(t_ast *cmd_node, t_shell *shell)
 		exit(EXIT_FAILURE);
 	path = find_command_path(cmd_node->argv[0], shell);
 	if (!path)
+		handle_path_error(cmd_node->argv[0], envp);
+	if (is_directory(path))
 	{
-		ft_dprintf(2, "minishell: %s: command not found\n", cmd_node->argv[0]);
+		ft_dprintf(2, "minishell: %s: Is a directory\n", path);
 		free_char_array(envp);
-		exit(127);
+		free(path);
+		exit(126);
 	}
 	execve(path, cmd_node->argv, envp);
 	perror("execve");
@@ -62,4 +66,23 @@ static void	child_process(t_ast *node, t_shell *shell)
 	if (!cmd_node || !cmd_node->argv || !cmd_node->argv[0])
 		exit(EXIT_FAILURE);
 	execute_external_cmd(cmd_node, shell);
+}
+
+static void	handle_path_error(char *cmd, char **envp)
+{
+	if (ft_strchr(cmd, '/'))
+	{
+		if (access(cmd, F_OK) != 0)
+			ft_dprintf(2, "minishell: %s: No such file or directory\n", cmd);
+		else if (access(cmd, X_OK) != 0)
+			ft_dprintf(2, "minishell: %s: Permission denied\n", cmd);
+		else if (is_directory(cmd))
+			ft_dprintf(2, "minishell: %s: Is a directory\n", cmd);
+		else
+			ft_dprintf(2, "minishell: %s: command not found\n", cmd);
+	}
+	else
+		ft_dprintf(2, "minishell: %s: command not found\n", cmd);
+	free_char_array(envp);
+	exit(127);
 }

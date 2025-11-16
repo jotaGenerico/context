@@ -92,15 +92,21 @@ static int	open_outfile_trunc(t_ast *node)
 
 static int	open_infile(t_ast *node)
 {
-	int	fd;
+	int		fd;
+	char	*clean_filename;
 
-	fd = open(node->filename, O_RDONLY);
+	clean_filename = process_filename(node->filename);
+	if (!clean_filename)
+		return (-1);
+	fd = open(clean_filename, O_RDONLY);
 	if (fd < 0)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		perror(node->filename);
+		perror(clean_filename);
+		free(clean_filename);
 		return (-1);
 	}
+	free(clean_filename);
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
 		perror("dup2");

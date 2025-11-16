@@ -166,4 +166,10 @@ int	handle_redirect_only(t_ast *node, t_shell *shell);
 int	handle_empty_after_expand(t_ast *node, t_shell *shell, t_ast *cmd_node);
 int	process_command(t_ast *node, t_shell *shell, t_ast *cmd_node);
 
+char	*process_filename(char *raw_filename);
+t_ast	*create_redir_node(t_token_type type);
+char	**argv_add(char **argv, char *new_word);
+
+char	**remove_empty_args(char **argv);
+
 #endif
