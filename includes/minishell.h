@@ -89,7 +89,7 @@ t_ast		*ast_new_node(t_node_type type, t_ast *left, t_ast *right);
 int			builtin_cd(char **argv, t_shell *shell);
 int			builtin_echo(char **argv);
 int			builtin_env(t_shell *shell);
-int			builtin_exit(char **argv, t_shell *shell);
+int			builtin_exit(t_ast *node, t_shell *shell);
 int			builtin_export(char **argv, t_shell *shell);
 int			builtin_pwd(void);
 int			builtin_unset(char **argv, t_shell *shell);
@@ -159,5 +159,11 @@ int			setup_child_pipes(int i, int n, int *pipes);
 void		setup_signals(void);
 void		skip_spaces(char *line, int *i);
 int			wait_for_children(pid_t *pids, int n, t_shell *shell);
+
+int	exec_builtin_parent(t_ast *node, t_shell *shell);
+int	is_empty_command(char **argv);
+int	handle_redirect_only(t_ast *node, t_shell *shell);
+int	handle_empty_after_expand(t_ast *node, t_shell *shell, t_ast *cmd_node);
+int	process_command(t_ast *node, t_shell *shell, t_ast *cmd_node);
 
 #endif

@@ -32,13 +32,8 @@ t_ast	*parse_tokens(t_dlist *tokens)
 	root = parse_list(&current);
 	if (!root)
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token", 2);
-		return (NULL);
-	}
-	if (current)
-	{
-		ft_putendl_fd("minishell: syntax error: extra tokens at end", 2);
-		ast_free(root);
+		ft_putendl_fd(
+			"minishell: syntax error near unexpected token `newline'", 2);
 		return (NULL);
 	}
 	return (root);

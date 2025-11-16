@@ -35,7 +35,7 @@ static int	apply_heredoc(t_ast *node)
 {
 	if (node->heredoc_fd < 0)
 	{
-		ft_dprintf(2, "minishell: erro interno de heredoc (fd inválido)\n");
+		ft_dprintf(2, "minishell: internal heredoc error (invalid fd)\n");
 		return (-1);
 	}
 	if (dup2(node->heredoc_fd, STDIN_FILENO) == -1)
