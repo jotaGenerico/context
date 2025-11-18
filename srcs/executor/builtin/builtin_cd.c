@@ -1,55 +1,76 @@
 #include "minishell.h"
 
-static void	update_pwd_vars(t_shell *shell, char *oldpwd);
+static char	*get_target_path(char **argv, t_shell *shell, int *should_free);
+static void	update_working_dirs(t_shell *shell, char *old_cwd);
 
 int	builtin_cd(char **argv, t_shell *shell)
 {
 	char	*path;
-	char	oldpwd[4096];
+	char	*old_cwd;
+	int		should_free;
+	int		ret;
 
 	if (argv[1] && argv[2])
 	{
-		ft_dprintf(2, "minishell: cd: too many arguments\n");
+		ft_putendl_fd("minishell: cd: too many arguments", 2);
 		return (1);
 	}
-	if (!argv[1] || ft_strcmp(argv[1], "~") == 0)
-		path = get_env_value("HOME", shell);
+	should_free = 0;
+	path = get_target_path(argv, shell, &should_free);
+	if (!path)
+		return (1);
+	old_cwd = getcwd(NULL, 0);
+	ret = chdir(path);
+	if (ret == 0)
+		update_working_dirs(shell, old_cwd);
 	else
-		path = argv[1];
-	if (getcwd(oldpwd, sizeof(oldpwd)) == NULL)
-		ft_strlcpy(oldpwd, "", sizeof(oldpwd));
-	if (chdir(path) != 0)
-	{
-		ft_putstr_fd("minishell: cd: ", 2);
-		perror(path);
-		return (1);
-	}
-	update_pwd_vars(shell, oldpwd);
-	return (0);
+		perror("minishell: cd");
+	if (should_free)
+		free(path);
+	free(old_cwd);
+	return (ret != 0);
 }
 
-static void	update_pwd_vars(t_shell *shell, char *oldpwd)
+static char	*get_target_path(char **argv, t_shell *shell, int *should_free)
 {
-	char		cwd[4096];
-	t_dlist		*lst;
-	t_env_var	*var;
+	char	*env_val;
 
-	if (!getcwd(cwd, sizeof(cwd)))
-		return ;
-	lst = shell->env_list;
-	while (lst)
+	if (!argv[1] || ft_strcmp(argv[1], "~") == 0)
 	{
-		var = lst->content;
-		if (ft_strcmp(var->key, "OLDPWD") == 0)
-		{
-			free(var->value);
-			var->value = ft_strdup(oldpwd);
-		}
-		else if (ft_strcmp(var->key, "PWD") == 0)
-		{
-			free(var->value);
-			var->value = ft_strdup(cwd);
-		}
-		lst = lst->next;
+		env_val = get_env_value("HOME", shell);
+		if (!env_val)
+			ft_putendl_fd("minishell: cd: HOME not set", 2);
+		return (env_val);
 	}
+	if (ft_strcmp(argv[1], "-") == 0)
+	{
+		env_val = get_env_value("OLDPWD", shell);
+		if (!env_val)
+		{
+			ft_putendl_fd("minishell: cd: OLDPWD not set", 2);
+			return (NULL);
+		}
+		ft_putendl_fd(env_val, 1);
+		*should_free = 1;
+		return (ft_strdup(env_val));
+	}
+	return (argv[1]);
+}
+
+static void	update_working_dirs(t_shell *shell, char *old_cwd)
+{
+	char	*new_cwd;
+
+	new_cwd = getcwd(NULL, 0);
+	if (!new_cwd)
+	{
+		ft_putendl_fd("cd: error retrieving current directory: "
+			"getcwd: cannot access parent directories: "
+			"No such file or directory", 2);
+		new_cwd = ft_strdup("");
+	}
+	if (old_cwd)
+		set_env_var(shell, "OLDPWD", old_cwd);
+	set_env_var(shell, "PWD", new_cwd);
+	free(new_cwd);
 }
