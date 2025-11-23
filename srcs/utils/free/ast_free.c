@@ -18,6 +18,8 @@ static void	free_ast_content(t_ast *node)
 		return ;
 	if (node->argv)
 		free_char_array(node->argv);
+	if (node->argv_quoted)
+		free(node->argv_quoted);
 	if (node->filename)
 		free(node->filename);
 	if (node->type == NODE_HEREDOC && node->heredoc_fd != -1)

@@ -59,7 +59,8 @@ static int	process_next_command_token(t_dlist **tokens, t_ast **cmd_node_ptr)
 		actual_cmd = get_command_node(*cmd_node_ptr);
 		if (!actual_cmd)
 			actual_cmd = *cmd_node_ptr;
-		actual_cmd->argv = argv_add(actual_cmd->argv, token->value);
+		actual_cmd->argv = argv_add_quoted(actual_cmd->argv, token->value,
+				&actual_cmd->argv_quoted, token->was_quoted);
 		if (!actual_cmd->argv)
 			return (-1);
 		*tokens = (*tokens)->next;

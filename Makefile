@@ -42,6 +42,7 @@ EXP_SRCS	= $(SRC_DIR)/expander/expander_glob.c \
 # --- Parser ---
 PARSE_SRCS	= $(SRC_DIR)/parser/parser.c \
 			$(SRC_DIR)/parser/parse_and_or.c \
+			$(SRC_DIR)/parser/parse_argv.c \
 			$(SRC_DIR)/parser/parse_pipeline.c \
 			$(SRC_DIR)/parser/parse_subshell.c \
 			$(SRC_DIR)/parser/parse_command.c

@@ -32,6 +32,18 @@ t_token	*create_token(t_token_type type, char *value)
 		return (NULL);
 	token->type = type;
 	token->value = value;
+	token->was_quoted = 0;
+	return (token);
+}
+
+t_token	*create_quoted_token(t_token_type type, char *value, int was_quoted)
+{
+	t_token	*token;
+
+	token = create_token(type, value);
+	if (!token)
+		return (NULL);
+	token->was_quoted = was_quoted;
 	return (token);
 }
 

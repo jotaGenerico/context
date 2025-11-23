@@ -35,6 +35,7 @@ typedef struct s_token
 {
 	t_token_type	type;
 	char			*value;
+	int				was_quoted;
 }	t_token;
 
 typedef enum e_node_type
@@ -55,6 +56,7 @@ typedef struct s_ast
 {
 	t_node_type		type;
 	char			**argv;
+	int				*argv_quoted;
 	char			*filename;
 	int				heredoc_fd;
 	struct s_ast	*left;
@@ -84,6 +86,8 @@ typedef struct s_fork_data
 int			*alloc_pids(int n);
 int			*alloc_pipes(int n_pipes);
 int			apply_redirections(t_ast *node, t_shell *shell);
+char		**argv_add_quoted(char **argv, char *new_word, int **quoted,
+				int is_quoted);
 void		ast_free(t_ast *node);
 t_ast		*ast_new_node(t_node_type type, t_ast *left, t_ast *right);
 int			builtin_cd(char **argv, t_shell *shell);
@@ -100,6 +104,8 @@ void		close_all_pipes(int *pipes, int n_pipes);
 t_env_var	*create_env_var(char *key_value_pair);
 t_token		*create_operator_token(char *line, int *i);
 t_token		*create_token(t_token_type type, char *value);
+t_token		*create_quoted_token(t_token_type type, char *value,
+				int was_quoted);
 int			env_list_set_var(t_dlist **env_list, char *assignment);
 char		**env_list_to_array(t_dlist *env_list);
 int			exec_and_or(t_ast *node, t_shell *shell);
@@ -134,6 +140,7 @@ int			get_var_name_len(char *str);
 int			handle_assignment_only(t_ast *node, t_shell *shell);
 void		handle_command_not_found(char *cmd, int has_slash);
 int			handle_heredocs(t_ast *node, t_shell *shell);
+int			has_quotes(char *str);
 int			has_redirections(t_ast *node);
 void		init_shell(t_shell *shell, char **envp);
 int			is_builtin(t_ast *node);
@@ -157,19 +164,21 @@ int			save_std_fds(int *sv_in, int *sv_out, int *sv_err);
 void		set_env_var(t_shell *shell, char *key, char *value);
 int			setup_child_pipes(int i, int n, int *pipes);
 void		setup_signals(void);
+int			should_expand_wildcards(char **argv, int *argv_quoted);
 void		skip_spaces(char *line, int *i);
 int			wait_for_children(pid_t *pids, int n, t_shell *shell);
 
-int	exec_builtin_parent(t_ast *node, t_shell *shell);
-int	is_empty_command(char **argv);
-int	handle_redirect_only(t_ast *node, t_shell *shell);
-int	handle_empty_after_expand(t_ast *node, t_shell *shell, t_ast *cmd_node);
-int	process_command(t_ast *node, t_shell *shell, t_ast *cmd_node);
+int			exec_builtin_parent(t_ast *node, t_shell *shell);
+int			is_empty_command(char **argv);
+int			handle_redirect_only(t_ast *node, t_shell *shell);
+int			handle_empty_after_expand(t_ast *node, t_shell *shell,
+				t_ast *cmd_node);
+int			process_command(t_ast *node, t_shell *shell, t_ast *cmd_node);
 
-char	*process_filename(char *raw_filename);
-t_ast	*create_redir_node(t_token_type type);
-char	**argv_add(char **argv, char *new_word);
+char		*process_filename(char *raw_filename);
+t_ast		*create_redir_node(t_token_type type);
+char		**argv_add(char **argv, char *new_word);
 
-char	**remove_empty_args(char **argv);
+char		**remove_empty_args(char **argv);
 
 #endif

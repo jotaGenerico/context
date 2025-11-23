@@ -53,27 +53,3 @@ t_ast	*create_redir_node(t_token_type type)
 	else
 		return (ast_new_node(NODE_HEREDOC, NULL, NULL));
 }
-
-char	**argv_add(char **argv, char *new_word)
-{
-	int		count;
-	int		i;
-	char	**new_argv;
-
-	count = 0;
-	i = 0;
-	while (argv && argv[count])
-		count++;
-	new_argv = malloc(sizeof(char *) * (count + 2));
-	if (!new_argv)
-		return (NULL);
-	while (i < count)
-	{
-		new_argv[i] = argv[i];
-		i++;
-	}
-	new_argv[count] = ft_strdup(new_word);
-	new_argv[count + 1] = NULL;
-	free(argv);
-	return (new_argv);
-}

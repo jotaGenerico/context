@@ -16,10 +16,13 @@ int	exec_simple_cmd(t_ast *node, t_shell *shell)
 	cmd_node->argv = remove_empty_args(cmd_node->argv);
 	if (is_empty_command(cmd_node->argv))
 		return (handle_empty_after_expand(node, shell, cmd_node));
-	if (expand_wildcards(&(cmd_node->argv)) != 0)
+	if (should_expand_wildcards(cmd_node->argv, cmd_node->argv_quoted))
 	{
-		shell->exit_status = 1;
-		return (shell->exit_status);
+		if (expand_wildcards(&(cmd_node->argv)) != 0)
+		{
+			shell->exit_status = 1;
+			return (shell->exit_status);
+		}
 	}
 	if (is_empty_command(cmd_node->argv))
 		return (handle_empty_after_expand(node, shell, cmd_node));

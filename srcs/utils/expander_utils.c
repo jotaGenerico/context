@@ -34,3 +34,19 @@ char	**ft_lst_to_array(t_list *list)
 	}
 	return (array);
 }
+
+int	should_expand_wildcards(char **argv, int *argv_quoted)
+{
+	int	i;
+
+	if (!argv || !argv_quoted)
+		return (0);
+	i = 0;
+	while (argv[i])
+	{
+		if (ft_strchr(argv[i], '*') && !argv_quoted[i])
+			return (1);
+		i++;
+	}
+	return (0);
+}

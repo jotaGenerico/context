@@ -9,6 +9,7 @@ t_ast	*ast_new_node(t_node_type type, t_ast *left, t_ast *right)
 		return (NULL);
 	node->type = type;
 	node->argv = NULL;
+	node->argv_quoted = NULL;
 	node->filename = NULL;
 	node->heredoc_fd = -1;
 	node->left = left;
