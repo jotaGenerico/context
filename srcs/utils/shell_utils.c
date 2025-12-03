@@ -29,3 +29,11 @@ char	*ft_strjoin3(char const *s1, char const *s2, char const *s3)
 	ft_strlcat(new_str, s3, total_len);
 	return (new_str);
 }
+
+void	clean_exit_child(t_shell *shell, int status)
+{
+	if (shell->ast)
+		ast_free(shell->ast);
+	cleanup_shell(shell);
+	exit(status);
+}

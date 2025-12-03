@@ -59,7 +59,7 @@ int	check_command_access(char *cmd)
 	return (0);
 }
 
-void	handle_command_not_found(char *cmd, int has_slash)
+void	handle_command_not_found(char *cmd, int has_slash, t_shell *shell)
 {
 	int	exit_code;
 
@@ -67,12 +67,12 @@ void	handle_command_not_found(char *cmd, int has_slash)
 	{
 		exit_code = check_command_access(cmd);
 		if (exit_code != 0)
-			exit(exit_code);
+			clean_exit_child(shell, exit_code);
 		ft_dprintf(2, "minishell: %s: command not found\n", cmd);
-		exit(127);
+		clean_exit_child(shell, 127);
 	}
 	ft_dprintf(2, "minishell: %s: command not found\n", cmd);
-	exit(127);
+	clean_exit_child(shell, 127);
 }
 
 void	exec_external_command(t_ast *cmd, char *path, t_shell *shell)
@@ -84,5 +84,5 @@ void	exec_external_command(t_ast *cmd, char *path, t_shell *shell)
 	perror("execve");
 	free_char_array(env_array);
 	free(path);
-	exit(126);
+	clean_exit_child(shell, 126);
 }

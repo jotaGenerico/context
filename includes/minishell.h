@@ -83,9 +83,10 @@ typedef struct s_env_var
 
 typedef struct s_shell
 {
-	t_dlist	*env_list;
-	t_dlist	*token_list;
-	int		exit_status;
+	t_dlist			*env_list;
+	t_dlist			*token_list;
+	struct s_ast	*ast;
+	int				exit_status;
 }	t_shell;
 
 typedef struct s_fork_data
@@ -111,8 +112,11 @@ int			builtin_pwd(void);
 int			builtin_unset(char **argv, t_shell *shell);
 void		child_signals(void);
 int			check_command_access(char *cmd);
+void		clean_exit_child(t_shell *shell, int status);
 void		cleanup_shell(t_shell *shell);
+void		close_all_fds_except_std(void);
 void		close_all_pipes(int *pipes, int n_pipes);
+void		close_high_fds_except_pipe(void);
 t_env_var	*create_env_var(char *key_value_pair);
 t_token		*create_operator_token(char *line, int *i);
 t_token		*create_token(t_token_type type, char *value);
@@ -150,7 +154,7 @@ t_ast		*get_command_node(t_ast *node);
 t_list		*get_glob_matches(char *pattern);
 int			get_var_name_len(char *str);
 int			handle_assignment_only(t_ast *node, t_shell *shell);
-void		handle_command_not_found(char *cmd, int has_slash);
+void		handle_command_not_found(char *cmd, int has_slash, t_shell *shell);
 int			handle_heredocs(t_ast *node, t_shell *shell);
 int			has_quotes(char *str);
 int			has_redirections(t_ast *node);
@@ -179,18 +183,15 @@ void		setup_signals(void);
 int			should_expand_wildcards(char **argv, int *argv_quoted);
 void		skip_spaces(char *line, int *i);
 int			wait_for_children(pid_t *pids, int n, t_shell *shell);
-
 int			exec_builtin_parent(t_ast *node, t_shell *shell);
 int			is_empty_command(char **argv);
 int			handle_redirect_only(t_ast *node, t_shell *shell);
 int			handle_empty_after_expand(t_ast *node, t_shell *shell,
 				t_ast *cmd_node);
 int			process_command(t_ast *node, t_shell *shell, t_ast *cmd_node);
-
 char		*process_filename(char *raw_filename);
 t_ast		*create_redir_node(t_token_type type);
 char		**argv_add(char **argv, char *new_word);
-
 char		**remove_empty_args(char **argv);
 
 #endif

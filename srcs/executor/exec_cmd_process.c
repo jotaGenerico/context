@@ -14,7 +14,7 @@
 
 static void	execute_external_cmd(t_ast *cmd_node, t_shell *shell);
 static void	child_process(t_ast *node, t_shell *shell);
-static void	handle_path_error(char *cmd, char **envp);
+static void	handle_path_error_child(char *cmd, char **envp, t_shell *shell);
 
 int	execute_forked_cmd(t_ast *node, t_shell *shell)
 {
@@ -46,41 +46,46 @@ static void	execute_external_cmd(t_ast *cmd_node, t_shell *shell)
 
 	envp = env_list_to_array(shell->env_list);
 	if (!envp)
-		exit(EXIT_FAILURE);
+		clean_exit_child(shell, EXIT_FAILURE);
 	path = find_command_path(cmd_node->argv[0], shell);
 	if (!path)
-		handle_path_error(cmd_node->argv[0], envp);
+		handle_path_error_child(cmd_node->argv[0], envp, shell);
 	if (is_directory(path))
 	{
 		ft_dprintf(2, "minishell: %s: Is a directory\n", path);
 		free_char_array(envp);
 		free(path);
-		exit(126);
+		clean_exit_child(shell, 126);
 	}
+	close_all_fds_except_std();
 	execve(path, cmd_node->argv, envp);
 	perror("execve");
 	free_char_array(envp);
 	free(path);
-	exit(126);
+	clean_exit_child(shell, 126);
 }
 
 static void	child_process(t_ast *node, t_shell *shell)
 {
 	t_ast	*cmd_node;
+	int		ret;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (apply_redirections(node, shell) != 0)
-		exit(EXIT_FAILURE);
+		clean_exit_child(shell, EXIT_FAILURE);
 	cmd_node = get_command_node(node);
 	if (is_builtin(cmd_node))
-		exec_builtin_child(cmd_node, shell);
+	{
+		ret = exec_builtin(cmd_node, shell);
+		clean_exit_child(shell, ret);
+	}
 	if (!cmd_node || !cmd_node->argv || !cmd_node->argv[0])
-		exit(EXIT_FAILURE);
+		clean_exit_child(shell, EXIT_FAILURE);
 	execute_external_cmd(cmd_node, shell);
 }
 
-static void	handle_path_error(char *cmd, char **envp)
+static void	handle_path_error_child(char *cmd, char **envp, t_shell *shell)
 {
 	if (ft_strchr(cmd, '/'))
 	{
@@ -96,5 +101,5 @@ static void	handle_path_error(char *cmd, char **envp)
 	else
 		ft_dprintf(2, "minishell: %s: command not found\n", cmd);
 	free_char_array(envp);
-	exit(127);
+	clean_exit_child(shell, 127);
 }

@@ -1,29 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_env.c                                      :+:      :+:    :+:   */
+/*   free_fd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 15:57:28 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 15:57:31 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 16:00:19 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 16:00:21 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	builtin_env(t_shell *shell)
+void	close_high_fds_except_pipe(void)
 {
-	t_dlist		*lst;
-	t_env_var	*var;
+	int	fd;
 
-	lst = shell->env_list;
-	while (lst)
+	fd = 5;
+	while (fd < 1024)
 	{
-		var = lst->content;
-		if (var->value)
-			ft_printf("%s=%s\n", var->key, var->value);
-		lst = lst->next;
+		close(fd);
+		fd++;
 	}
-	return (0);
+}
+
+void	close_all_fds_except_std(void)
+{
+	int	fd;
+
+	fd = 3;
+	while (fd < 256)
+	{
+		close(fd);
+		fd++;
+	}
 }

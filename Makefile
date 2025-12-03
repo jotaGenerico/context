@@ -82,6 +82,7 @@ UTIL_SRCS	= $(SRC_DIR)/utils/builtin_export_utils.c \
 			$(SRC_DIR)/utils/free/ast_free.c \
 			$(SRC_DIR)/utils/free/dlist_free.c \
 			$(SRC_DIR)/utils/free/free_array.c \
+			$(SRC_DIR)/utils/free/free_fd.c \
 			$(SRC_DIR)/utils/lexer_utils.c \
 			$(SRC_DIR)/utils/parse_command_utils.c \
 			$(SRC_DIR)/utils/pipe_utils.c \
@@ -139,7 +140,3 @@ valgrind: $(NAME)
 	@echo "\033[1;36m[VALGRIND]\033[0m Executando análise de memória...\n"
 	valgrind --suppressions=readline.sup --track-fds=yes \
 		--leak-check=full --show-leak-kinds=all ./$(NAME)
-
-#valgrind: $(NAME)
-#	valgrind --leak-check=full --show-leak-kinds=all \
-#	--track-origins=yes ./$(NAME)

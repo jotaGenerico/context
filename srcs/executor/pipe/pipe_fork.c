@@ -43,17 +43,21 @@ static void	exec_child_command(t_ast *cmd, t_shell *shell)
 {
 	char	*path;
 	int		has_slash;
+	int		builtin_ret;
 
 	child_signals();
 	if (apply_redirections(cmd, shell) != 0)
-		exit(1);
+		clean_exit_child(shell, 1);
 	if (is_builtin(cmd))
-		exit(exec_builtin_child(cmd, shell));
+	{
+		builtin_ret = exec_builtin(cmd, shell);
+		clean_exit_child(shell, builtin_ret);
+	}
 	path = find_command_path(cmd->argv[0], shell);
 	if (!path)
 	{
 		has_slash = (ft_strchr(cmd->argv[0], '/') != NULL);
-		handle_command_not_found(cmd->argv[0], has_slash);
+		handle_command_not_found(cmd->argv[0], has_slash, shell);
 	}
 	exec_external_command(cmd, path, shell);
 }

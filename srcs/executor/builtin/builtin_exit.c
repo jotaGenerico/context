@@ -27,6 +27,7 @@ int	builtin_exit(t_ast *node, t_shell *shell)
 		code = ft_atoi(node->argv[1]) % 256;
 	ast_free(node);
 	cleanup_shell(shell);
+	close_all_fds_except_std();
 	exit(code);
 }
 

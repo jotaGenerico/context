@@ -53,12 +53,13 @@ static void	child_pipe_process(t_ast *node, t_shell *shell, int *pipe_fds,
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
+	close_high_fds_except_pipe();
 	if (is_left)
 	{
 		if (dup2(pipe_fds[1], STDOUT_FILENO) == -1)
 		{
 			perror("dup2 STDOUT pipe");
-			exit(1);
+			clean_exit_child(shell, 1);
 		}
 		close(pipe_fds[0]);
 		close(pipe_fds[1]);
@@ -68,13 +69,13 @@ static void	child_pipe_process(t_ast *node, t_shell *shell, int *pipe_fds,
 		if (dup2(pipe_fds[0], STDIN_FILENO) == -1)
 		{
 			perror("dup2 STDIN pipe");
-			exit(1);
+			clean_exit_child(shell, 1);
 		}
 		close(pipe_fds[1]);
 		close(pipe_fds[0]);
 	}
 	execute_ast(node, shell);
-	exit(shell->exit_status);
+	clean_exit_child(shell, shell->exit_status);
 }
 
 static int	handle_fork_error(int *pipe_fds, pid_t pid_to_wait)
