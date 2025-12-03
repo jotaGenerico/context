@@ -104,7 +104,7 @@ RESET		= \033[0m
 all: $(NAME)
 
 bonus: $(NAME)
-	@echo "$(GREEN)✓ Bonus version compiled (same binary)$(RESET)"
+	@echo "$(GREEN)✓ Bonus compiled successfully!$(RESET)"
 
 $(NAME): $(LIBFT) $(OBJS)
 	@echo "$(YELLOW)Linkando $(NAME)...$(RESET)"
