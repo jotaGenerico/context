@@ -21,10 +21,13 @@ int	execute_forked_cmd(t_ast *node, t_shell *shell)
 	pid_t	pid;
 	int		status;
 
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	pid = fork();
 	if (pid < 0)
 	{
 		perror("fork");
+		setup_signals();
 		return (1);
 	}
 	if (pid == 0)
@@ -100,6 +103,7 @@ static void	handle_path_error_child(char *cmd, char **envp, t_shell *shell)
 	}
 	else
 		ft_dprintf(2, "minishell: %s: command not found\n", cmd);
+	close_all_fds_except_std();
 	free_char_array(envp);
 	clean_exit_child(shell, 127);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_builtin.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 15:59:48 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 15:59:51 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 15:59:48 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 15:59:51 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,14 @@ int	exec_builtin(t_ast *node, t_shell *shell)
 	else if (ft_strcmp(node->argv[0], "echo") == 0)
 		return (builtin_echo(node->argv));
 	else if (ft_strcmp(node->argv[0], "env") == 0)
+	{
+		if (node->argv[1] != NULL)
+		{
+			ft_dprintf(2, "minishell: env: argumentos demais\n");
+			return (1);
+		}
 		return (builtin_env(shell));
+	}
 	else if (ft_strcmp(node->argv[0], "exit") == 0)
 		return (builtin_exit(node, shell));
 	else if (ft_strcmp(node->argv[0], "export") == 0)

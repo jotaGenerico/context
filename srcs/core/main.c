@@ -23,10 +23,10 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	(void)argv;
 	init_shell(&shell, envp);
+	close_all_fds_except_std();
 	shell_loop(&shell);
 	exit_status = shell.exit_status;
 	cleanup_shell(&shell);
-	close_all_fds_except_std();
 	return (exit_status);
 }
 

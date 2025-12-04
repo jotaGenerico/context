@@ -25,6 +25,7 @@ int	exec_pipe(t_ast *left, t_ast *right, t_shell *shell)
 	pid_t	pid_right;
 
 	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	if (pipe(pipe_fds) == -1)
 		return (perror("pipe"), 1);
 	pid_left = fork();
