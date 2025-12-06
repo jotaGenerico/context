@@ -25,7 +25,8 @@ INCLUDES	= -I$(INC_DIR) -I$(LIBFT_DIR)/include
 CORE_SRCS	= $(SRC_DIR)/core/main.c \
 			$(SRC_DIR)/core/env.c \
 			$(SRC_DIR)/core/init.c \
-			$(SRC_DIR)/core/signals.c
+			$(SRC_DIR)/core/signals.c \
+			$(SRC_DIR)/core/signals_heredoc.c
 
 # --- Lexer ---
 LEXER_SRCS	= $(SRC_DIR)/lexer/lexer.c \
@@ -60,6 +61,7 @@ EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 			$(SRC_DIR)/executor/exec_heredoc.c \
 			$(SRC_DIR)/executor/exec_builtin.c \
 			$(SRC_DIR)/executor/pipe/pipe.c \
+			$(SRC_DIR)/executor/pipe/pipe_io.c \
 			$(SRC_DIR)/executor/pipe/pipe_fork.c \
 			$(SRC_DIR)/executor/pipe/pipe_setup.c \
 			$(SRC_DIR)/executor/redirections/redirections.c \
@@ -83,6 +85,7 @@ UTIL_SRCS	= $(SRC_DIR)/utils/builtin_export_utils.c \
 			$(SRC_DIR)/utils/free/dlist_free.c \
 			$(SRC_DIR)/utils/free/free_array.c \
 			$(SRC_DIR)/utils/free/free_fd.c \
+			$(SRC_DIR)/utils/heredoc_utils.c \
 			$(SRC_DIR)/utils/lexer_utils.c \
 			$(SRC_DIR)/utils/parse_command_utils.c \
 			$(SRC_DIR)/utils/pipe_utils.c \

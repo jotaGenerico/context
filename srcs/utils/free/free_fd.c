@@ -12,18 +12,6 @@
 
 #include "minishell.h"
 
-void	close_high_fds_except_pipe(void)
-{
-	int	fd;
-
-	fd = 5;
-	while (fd < 1024)
-	{
-		close(fd);
-		fd++;
-	}
-}
-
 void	close_all_fds_except_std(void)
 {
 	int	fd;

@@ -54,27 +54,10 @@ static void	child_pipe_process(t_ast *node, t_shell *shell, int *pipe_fds,
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	close_high_fds_except_pipe();
 	if (is_left)
-	{
-		if (dup2(pipe_fds[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup2 STDOUT pipe");
-			clean_exit_child(shell, 1);
-		}
-		close(pipe_fds[0]);
-		close(pipe_fds[1]);
-	}
+		setup_pipe_output(shell, pipe_fds);
 	else
-	{
-		if (dup2(pipe_fds[0], STDIN_FILENO) == -1)
-		{
-			perror("dup2 STDIN pipe");
-			clean_exit_child(shell, 1);
-		}
-		close(pipe_fds[1]);
-		close(pipe_fds[0]);
-	}
+		setup_pipe_input(shell, pipe_fds);
 	execute_ast(node, shell);
 	clean_exit_child(shell, shell->exit_status);
 }
