@@ -23,3 +23,18 @@ void	close_all_fds_except_std(void)
 		fd++;
 	}
 }
+
+void	close_custom_redirs(t_ast *node)
+{
+	if (!node)
+		return ;
+	if (node->left)
+		close_custom_redirs(node->left);
+	if (node->right)
+		close_custom_redirs(node->right);
+	if ((node->type == NODE_REDIR_OUT || node->type == NODE_REDIR_APPEND
+			|| node->type == NODE_REDIR_IN) && node->fd_target > 2)
+	{
+		close(node->fd_target);
+	}
+}
