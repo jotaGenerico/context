@@ -25,6 +25,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	(void)argv;
 	init_shell(&shell, envp);
+	setup_signals();
 	close_all_fds_except_std();
 	shell_loop(&shell);
 	exit_status = shell.exit_status;
@@ -73,7 +74,10 @@ static void	shell_loop(t_shell *shell)
 		shell->ast = NULL;
 		line = readline("minishell$ ");
 		if (!line)
+		{
+			write(STDOUT_FILENO, "exit\n", 5);
 			break ;
+		}
 		if (*line)
 			add_history(line);
 		process_input(shell, line);

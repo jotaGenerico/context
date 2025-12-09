@@ -103,6 +103,8 @@ static t_ast	*parse_redirection(t_dlist **tokens, t_token *redir_token)
 		free(processed_filename);
 		return (NULL);
 	}
+	if (redir_token->type == TOKEN_HEREDOC && file_token->was_quoted)
+		redir_node->heredoc_expand = 0;
 	redir_node->filename = processed_filename;
 	return (redir_node);
 }

@@ -20,10 +20,11 @@ int	handle_heredoc_interrupt(int *pipe_fds)
 	return (130);
 }
 
-int	process_heredoc_line(char *line, t_ast *node, int write_fd)
+int	process_heredoc_line(char *line, t_ast *node, int write_fd, t_shell *shell)
 {
 	size_t	len_line;
 	size_t	len_delim;
+	char	*expanded_line;
 
 	len_line = ft_strlen(line);
 	len_delim = ft_strlen(node->filename);
@@ -33,7 +34,13 @@ int	process_heredoc_line(char *line, t_ast *node, int write_fd)
 		free(line);
 		return (1);
 	}
-	ft_putendl_fd(line, write_fd);
+	if (node->heredoc_expand)
+		expanded_line = expand_word(line, shell);
+	else
+		expanded_line = line;
+	ft_putendl_fd(expanded_line, write_fd);
+	if (node->heredoc_expand)
+		free(expanded_line);
 	free(line);
 	return (0);
 }

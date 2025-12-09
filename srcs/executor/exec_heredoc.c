@@ -6,26 +6,15 @@
 /*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/01 16:00:13 by jose-cad          #+#    #+#             */
-/*   Updated: 2025/12/01 16:00:15 by jose-cad         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   exec_heredoc.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:00:13 by jose-cad          #+#    #+#             */
 /*   Updated: 2025/12/06 00:00:00 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	read_heredoc_input(t_ast *node);
+static int	read_heredoc_input(t_ast *node, t_shell *shell);
 static int	handle_eof_heredoc(t_ast *node, int *pipe_fds);
-static int	process_heredoc_loop(t_ast *node, int write_fd);
+static int	process_heredoc_loop(t_ast *node, int write_fd, t_shell *shell);
 
 int	handle_heredocs(t_ast *node, t_shell *shell)
 {
@@ -33,9 +22,14 @@ int	handle_heredocs(t_ast *node, t_shell *shell)
 
 	if (!node)
 		return (0);
+	result = handle_heredocs(node->left, shell);
+	if (result != 0)
+		return (result);
+	if (result != 0)
+		return (result);
 	if (node->type == NODE_HEREDOC)
 	{
-		result = read_heredoc_input(node);
+		result = read_heredoc_input(node, shell);
 		if (result == 130)
 		{
 			shell->exit_status = 130;
@@ -44,11 +38,7 @@ int	handle_heredocs(t_ast *node, t_shell *shell)
 		if (result != 0)
 			return (1);
 	}
-	result = handle_heredocs(node->left, shell);
-	if (result != 0)
-		return (result);
-	result = handle_heredocs(node->right, shell);
-	return (result);
+	return (0);
 }
 
 static int	handle_eof_heredoc(t_ast *node, int *pipe_fds)
@@ -60,11 +50,10 @@ static int	handle_eof_heredoc(t_ast *node, int *pipe_fds)
 	write(STDOUT_FILENO, "')\n", 3);
 	close(pipe_fds[1]);
 	node->heredoc_fd = pipe_fds[0];
-	setup_signals();
 	return (0);
 }
 
-static int	process_heredoc_loop(t_ast *node, int write_fd)
+static int	process_heredoc_loop(t_ast *node, int write_fd, t_shell *shell)
 {
 	char	*line;
 
@@ -80,28 +69,33 @@ static int	process_heredoc_loop(t_ast *node, int write_fd)
 				return (1);
 			return (2);
 		}
-		if (process_heredoc_line(line, node, write_fd))
+		if (process_heredoc_line(line, node, write_fd, shell))
 			break ;
 	}
 	return (0);
 }
 
-static int	read_heredoc_input(t_ast *node)
+static int	read_heredoc_input(t_ast *node, t_shell *shell)
 {
 	int	pipe_fds[2];
 	int	result;
+	int	return_value;
 
 	if (pipe(pipe_fds) == -1)
 		return (perror("pipe"), 1);
 	g_signal = 0;
 	setup_heredoc_signals();
-	result = process_heredoc_loop(node, pipe_fds[1]);
+	result = process_heredoc_loop(node, pipe_fds[1], shell);
 	if (result == 1)
-		return (handle_heredoc_interrupt(pipe_fds));
-	if (result == 2)
-		return (handle_eof_heredoc(node, pipe_fds));
-	close(pipe_fds[1]);
-	node->heredoc_fd = pipe_fds[0];
+		return_value = handle_heredoc_interrupt(pipe_fds);
+	else if (result == 2)
+		return_value = handle_eof_heredoc(node, pipe_fds);
+	else
+	{
+		close(pipe_fds[1]);
+		node->heredoc_fd = pipe_fds[0];
+		return_value = 0;
+	}
 	setup_signals();
-	return (0);
+	return (return_value);
 }

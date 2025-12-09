@@ -24,6 +24,7 @@ t_ast	*ast_new_node(t_node_type type, t_ast *left, t_ast *right)
 	node->argv_quoted = NULL;
 	node->filename = NULL;
 	node->heredoc_fd = -1;
+	node->heredoc_expand = 1;
 	node->left = left;
 	node->right = right;
 	return (node);

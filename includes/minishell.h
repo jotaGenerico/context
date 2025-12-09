@@ -71,6 +71,7 @@ typedef struct s_ast
 	int				*argv_quoted;
 	char			*filename;
 	int				heredoc_fd;
+	int				heredoc_expand;
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
@@ -185,10 +186,12 @@ int			print_all_env(t_shell *shell);
 int			process_command(t_ast *node, t_shell *shell, t_ast *cmd_node);
 int			process_exports(char **argv, t_shell *shell);
 char		*process_filename(char *raw_filename);
-int			process_heredoc_line(char *line, t_ast *node, int write_fd);
+int			process_heredoc_line(char *line, t_ast *node,
+				int write_fd, t_shell *shell);
 t_token		*process_word_token(char *line, int *i);
 char		*read_heredoc_line(void);
 char		**remove_empty_args(char **argv);
+void		restore_interactive_signals(void);
 void		restore_std_fds(int sv_in, int sv_out, int sv_err);
 void		safe_close(int fd);
 int			save_std_fds(int *sv_in, int *sv_out, int *sv_err);

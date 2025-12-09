@@ -24,25 +24,15 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
-void	handle_sigquit(int sig)
-{
-	(void)sig;
-	exit(131);
-}
-
 void	setup_signals(void)
 {
-	struct sigaction	sa_int;
-	struct sigaction	sa_quit;
+	struct sigaction	sa;
 
-	ft_bzero(&sa_int, sizeof(sa_int));
-	sa_int.sa_handler = handle_sigint;
-	sa_int.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa_int, NULL);
-	ft_bzero(&sa_quit, sizeof(sa_quit));
-	sa_quit.sa_handler = handle_sigquit;
-	sa_quit.sa_flags = SA_RESTART;
-	sigaction(SIGQUIT, &sa_quit, NULL);
+	ft_bzero(&sa, sizeof(sa));
+	sa.sa_handler = handle_sigint;
+	sa.sa_flags = SA_RESTART;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
 }
 
@@ -50,12 +40,4 @@ void	setup_signals_child(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-}
-
-void	heredoc_sigint_handler(int sig)
-{
-	(void)sig;
-	g_signal = SIGINT;
-	write(STDOUT_FILENO, "\n", 1);
-	close(STDIN_FILENO);
 }
