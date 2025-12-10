@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_operators.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:01:20 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 16:01:22 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 16:01:20 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 16:01:22 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static t_token_type	get_pipe_and_semicolon_type(char *line, int *i);
 static t_token_type	get_operator_type(char *line, int *i);
 static t_token_type	get_redir_and_paren_type(char *line, int *i);
+static t_token_type	check_redir_in_out(char *line, int *i);
 
 t_token	*create_operator_token(char *line, int *i)
 {
@@ -33,7 +34,7 @@ t_token	*create_operator_token(char *line, int *i)
 	return (create_token(type, value));
 }
 
-static t_token_type	get_redir_and_paren_type(char *line, int *i)
+static t_token_type	check_redir_in_out(char *line, int *i)
 {
 	if (line[*i] == '<')
 	{
@@ -52,6 +53,21 @@ static t_token_type	get_redir_and_paren_type(char *line, int *i)
 			return (TOKEN_REDIR_APPEND);
 		}
 		return (TOKEN_REDIR_OUT);
+	}
+	return (TOKEN_ERROR);
+}
+
+static t_token_type	get_redir_and_paren_type(char *line, int *i)
+{
+	t_token_type	type;
+
+	type = check_redir_in_out(line, i);
+	if (type != TOKEN_ERROR)
+		return (type);
+	if (line[*i] == '2' && line[*i + 1] == '>')
+	{
+		(*i)++;
+		return (TOKEN_REDIR_ERR);
 	}
 	if (line[*i] == '(')
 		return (TOKEN_LPAREN);

@@ -9,6 +9,17 @@
 /*   Updated: 2025/12/01 16:03:59 by kgagliar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirections_utils.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/01 16:03:57 by kgagliar          #+#    #+#             */
+/*   Updated: 2025/12/01 16:03:59 by kgagliar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -28,6 +39,8 @@ const char	*redir_type_to_str(t_node_type type)
 		return (">>");
 	if (type == NODE_HEREDOC)
 		return ("<<");
+	if (type == NODE_REDIR_ERR)
+		return ("2>");
 	return ("?");
 }
 
@@ -38,7 +51,8 @@ void	free_redirections(t_ast *node)
 	if (node->type == NODE_REDIR_IN
 		|| node->type == NODE_REDIR_OUT
 		|| node->type == NODE_REDIR_APPEND
-		|| node->type == NODE_HEREDOC)
+		|| node->type == NODE_HEREDOC
+		|| node->type == NODE_REDIR_ERR)
 	{
 		if (node->filename)
 			free(node->filename);
@@ -55,7 +69,8 @@ int	has_redirections(t_ast *node)
 	if (node->type == NODE_REDIR_IN
 		|| node->type == NODE_REDIR_OUT
 		|| node->type == NODE_REDIR_APPEND
-		|| node->type == NODE_HEREDOC)
+		|| node->type == NODE_HEREDOC
+		|| node->type == NODE_REDIR_ERR)
 		return (1);
 	return (has_redirections(node->left) || has_redirections(node->right));
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_command_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:03:47 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 16:03:48 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 16:03:47 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 16:03:48 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ t_ast	*create_redir_node(t_token_type type)
 		return (ast_new_node(NODE_REDIR_OUT, NULL, NULL));
 	else if (type == TOKEN_REDIR_APPEND)
 		return (ast_new_node(NODE_REDIR_APPEND, NULL, NULL));
+	else if (type == TOKEN_REDIR_ERR)
+		return (ast_new_node(NODE_REDIR_ERR, NULL, NULL));
 	else
 		return (ast_new_node(NODE_HEREDOC, NULL, NULL));
 }

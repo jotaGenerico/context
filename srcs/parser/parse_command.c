@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_command.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:02:05 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 16:02:06 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 16:02:05 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 16:02:06 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static int	process_next_command_token(t_dlist **tokens, t_ast **cmd_node_ptr)
 		*tokens = (*tokens)->next;
 		return (1);
 	}
-	else if (token->type >= TOKEN_REDIR_IN && token->type <= TOKEN_HEREDOC)
+	else if (token->type >= TOKEN_REDIR_IN && token->type <= TOKEN_REDIR_ERR)
 		return (handle_redirection_token(tokens, cmd_node_ptr));
 	else
 		return (0);

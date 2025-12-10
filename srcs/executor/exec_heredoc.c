@@ -85,6 +85,7 @@ static int	read_heredoc_input(t_ast *node, t_shell *shell)
 		return (perror("pipe"), 1);
 	g_signal = 0;
 	setup_heredoc_signals();
+	set_heredoc_tty();
 	result = process_heredoc_loop(node, pipe_fds[1], shell);
 	if (result == 1)
 		return_value = handle_heredoc_interrupt(pipe_fds);

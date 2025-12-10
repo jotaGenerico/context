@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:00:47 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 16:00:49 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 16:00:47 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 16:00:49 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ int	execute_ast(t_ast *node, t_shell *shell)
 		|| node->type == NODE_REDIR_IN
 		|| node->type == NODE_REDIR_OUT
 		|| node->type == NODE_REDIR_APPEND
-		|| node->type == NODE_HEREDOC)
+		|| node->type == NODE_HEREDOC
+		|| node->type == NODE_REDIR_ERR)
 		return (exec_simple_cmd(node, shell));
 	if (node->type == NODE_PIPE)
 		return (exec_pipeline(node, shell));

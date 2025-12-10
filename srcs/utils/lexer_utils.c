@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:03:39 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 16:03:40 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 16:03:39 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 16:03:40 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int	is_operator(char *line, int i)
 {
 	if (line[i] == '|' || line[i] == '<' || line[i] == '>'
 		|| line[i] == '(' || line[i] == ')' || line[i] == '&')
+		return (1);
+	if (line[i] == '2' && line[i + 1] == '>')
 		return (1);
 	return (0);
 }

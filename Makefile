@@ -26,7 +26,8 @@ CORE_SRCS	= $(SRC_DIR)/core/main.c \
 			$(SRC_DIR)/core/env.c \
 			$(SRC_DIR)/core/init.c \
 			$(SRC_DIR)/core/signals.c \
-			$(SRC_DIR)/core/signals_heredoc.c
+			$(SRC_DIR)/core/signals_heredoc.c \
+			$(SRC_DIR)/core/termios.c
 
 # --- Lexer ---
 LEXER_SRCS	= $(SRC_DIR)/lexer/lexer.c \
@@ -65,6 +66,7 @@ EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 			$(SRC_DIR)/executor/pipe/pipe_fork.c \
 			$(SRC_DIR)/executor/pipe/pipe_setup.c \
 			$(SRC_DIR)/executor/redirections/redirections.c \
+			$(SRC_DIR)/executor/redirections/redirections_open.c \
 			$(SRC_DIR)/executor/builtin/builtin_cd.c \
 			$(SRC_DIR)/executor/builtin/builtin_echo.c \
 			$(SRC_DIR)/executor/builtin/builtin_env.c \

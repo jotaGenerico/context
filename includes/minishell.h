@@ -24,6 +24,7 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <termios.h>
 # include "libft.h"
 
 extern volatile sig_atomic_t	g_signal;
@@ -37,6 +38,7 @@ typedef enum e_token_type
 	TOKEN_REDIR_OUT,
 	TOKEN_REDIR_APPEND,
 	TOKEN_HEREDOC,
+	TOKEN_REDIR_ERR,
 	TOKEN_AND,
 	TOKEN_OR,
 	TOKEN_LPAREN,
@@ -61,6 +63,7 @@ typedef enum e_node_type
 	NODE_REDIR_OUT,
 	NODE_REDIR_APPEND,
 	NODE_HEREDOC,
+	NODE_REDIR_ERR,
 	NODE_SUBSHELL
 }	t_node_type;
 
@@ -176,6 +179,9 @@ int			is_glob_match(const char *pattern, const char *text);
 int			is_operator(char *line, int i);
 int			is_quote(char c);
 t_dlist		*lexer(char *line);
+int			open_outfile_append(t_ast *node);
+int			open_outfile_trunc(t_ast *node);
+int			open_errfile_trunc(t_ast *node);
 t_ast		*parse_and_or(t_dlist **tokens);
 t_ast		*parse_command(t_dlist **tokens);
 t_ast		*parse_list(t_dlist **tokens);
@@ -191,17 +197,21 @@ int			process_heredoc_line(char *line, t_ast *node,
 t_token		*process_word_token(char *line, int *i);
 char		*read_heredoc_line(void);
 char		**remove_empty_args(char **argv);
+void		restore_heredoc_tty(void);
 void		restore_interactive_signals(void);
+void		restore_terminal(void);
 void		restore_std_fds(int sv_in, int sv_out, int sv_err);
 void		safe_close(int fd);
 int			save_std_fds(int *sv_in, int *sv_out, int *sv_err);
 void		set_env_var(t_shell *shell, char *key, char *value);
+void		set_heredoc_tty(void);
 int			setup_child_pipes(int i, int n, int *pipes);
 void		setup_heredoc_signals(void);
 void		setup_pipe_input(t_shell *shell, int *pipe_fds);
 void		setup_pipe_output(t_shell *shell, int *pipe_fds);
 void		setup_signals(void);
 void		setup_signals_child(void);
+void		setup_terminal(void);
 int			should_expand_wildcards(char **argv, int *argv_quoted);
 void		skip_spaces(char *line, int *i);
 int			wait_for_children(pid_t *pids, int n, t_shell *shell);
