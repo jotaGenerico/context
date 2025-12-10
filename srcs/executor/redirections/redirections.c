@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 15:58:52 by jose-cad          #+#    #+#             */
-/*   Updated: 2025/12/01 15:58:53 by jose-cad         ###   ########.fr       */
+/*   Created: 2025/12/01 15:58:52 by kgagliar          #+#    #+#             */
+/*   Updated: 2025/12/01 15:58:53 by kgagliar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static int	open_infile(t_ast *node);
-static int	open_outfile_trunc(t_ast *node, int fd_target);
-static int	open_outfile_append(t_ast *node, int fd_target);
+static int	open_outfile_trunc(t_ast *node);
+static int	open_outfile_append(t_ast *node);
 static int	apply_heredoc(t_ast *node);
 
 int	apply_redirections(t_ast *node, t_shell *shell)
@@ -33,9 +33,9 @@ int	apply_redirections(t_ast *node, t_shell *shell)
 	if (node->type == NODE_REDIR_IN)
 		status = open_infile(node);
 	else if (node->type == NODE_REDIR_OUT)
-		status = open_outfile_trunc(node, node->fd_target);
+		status = open_outfile_trunc(node);
 	else if (node->type == NODE_REDIR_APPEND)
-		status = open_outfile_append(node, node->fd_target);
+		status = open_outfile_append(node);
 	else if (node->type == NODE_HEREDOC)
 		status = apply_heredoc(node);
 	if (node->right && status == 0)
@@ -60,7 +60,7 @@ static int	apply_heredoc(t_ast *node)
 	return (0);
 }
 
-static int	open_outfile_append(t_ast *node, int fd_target)
+static int	open_outfile_append(t_ast *node)
 {
 	int	fd;
 
@@ -71,7 +71,7 @@ static int	open_outfile_append(t_ast *node, int fd_target)
 		perror(node->filename);
 		return (-1);
 	}
-	if (dup2(fd, fd_target) == -1)
+	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
 		perror("dup2");
 		close(fd);
@@ -81,7 +81,7 @@ static int	open_outfile_append(t_ast *node, int fd_target)
 	return (0);
 }
 
-static int	open_outfile_trunc(t_ast *node, int fd_target)
+static int	open_outfile_trunc(t_ast *node)
 {
 	int	fd;
 
@@ -92,7 +92,7 @@ static int	open_outfile_trunc(t_ast *node, int fd_target)
 		perror(node->filename);
 		return (-1);
 	}
-	if (dup2(fd, fd_target) == -1)
+	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
 		perror("dup2");
 		close(fd);

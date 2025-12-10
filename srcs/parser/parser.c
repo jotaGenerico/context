@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgagliar <kgagliar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:02:25 by jose-cad          #+#    #+#             */
-/*   Updated: 2025/12/01 16:02:26 by jose-cad         ###   ########.fr       */
+/*   Created: 2025/12/01 16:02:25 by kgagliar          #+#    #+#             */
+/*   Updated: 2025/12/01 16:02:26 by kgagliar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ t_ast	*ast_new_node(t_node_type type, t_ast *left, t_ast *right)
 	node->filename = NULL;
 	node->heredoc_fd = -1;
 	node->heredoc_expand = 1;
-	node->fd_target = 1;
 	node->left = left;
 	node->right = right;
 	return (node);

@@ -72,7 +72,6 @@ typedef struct s_ast
 	char			*filename;
 	int				heredoc_fd;
 	int				heredoc_expand;
-	int				fd_target;
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
@@ -119,7 +118,6 @@ void		clean_exit_child(t_shell *shell, int status);
 void		cleanup_shell(t_shell *shell);
 void		close_all_fds_except_std(void);
 void		close_all_pipes(int *pipes, int n_pipes);
-void		close_custom_redirs(t_ast *node);
 t_env_var	*create_env_var(char *key_value_pair);
 t_token		*create_operator_token(char *line, int *i);
 t_ast		*create_redir_node(t_token_type type);
