@@ -39,3 +39,13 @@ int	exec_subshell(t_ast *node, t_shell *shell)
 		shell->exit_status = 128 + WTERMSIG(status);
 	return (shell->exit_status);
 }
+
+int	is_state_changing_builtin(t_ast *node)
+{
+	if (!node || !node->argv || !node->argv[0])
+		return (0);
+	return (!ft_strcmp(node->argv[0], "cd")
+		|| !ft_strcmp(node->argv[0], "exit")
+		|| !ft_strcmp(node->argv[0], "export")
+		|| !ft_strcmp(node->argv[0], "unset"));
+}

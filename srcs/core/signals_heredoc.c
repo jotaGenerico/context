@@ -35,3 +35,14 @@ void	setup_heredoc_signals(void)
 	sigemptyset(&sa_quit.sa_mask);
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
+
+void	set_heredoc_tty(void)
+{
+	struct termios	heredoc_termios;
+
+	if (tcgetattr(STDIN_FILENO, &heredoc_termios) == -1)
+		return ;
+	heredoc_termios.c_lflag &= ~ECHOCTL;
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &heredoc_termios) == -1)
+		perror("tcsetattr");
+}
