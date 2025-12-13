@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_subshell.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: z <kgagliar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jose-cad <jose-cad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/01 16:00:37 by kgagliar          #+#    #+#             */
-/*   Updated: 2025/12/01 16:00:38 by kgagliar         ###   ########.fr       */
+/*   Created: 2025/12/01 16:00:37 by jose-cad          #+#    #+#             */
+/*   Updated: 2025/12/01 16:00:38 by jose-cad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	exec_subshell(t_ast *node, t_shell *shell)
 	{
 		setup_signals_child();
 		execute_ast(node->left, shell);
-		exit(shell->exit_status);
+		clean_exit_child(shell, shell->exit_status);
 	}
 	waitpid(pid, &status, 0);
 	setup_signals();

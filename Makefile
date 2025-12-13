@@ -61,9 +61,7 @@ EXEC_SRCS	= $(SRC_DIR)/executor/executor.c \
 			$(SRC_DIR)/executor/exec_subshell.c \
 			$(SRC_DIR)/executor/exec_heredoc.c \
 			$(SRC_DIR)/executor/exec_builtin.c \
-			$(SRC_DIR)/executor/pipe/pipe.c \
 			$(SRC_DIR)/executor/pipe/pipe_io.c \
-			$(SRC_DIR)/executor/pipe/pipe_fork.c \
 			$(SRC_DIR)/executor/pipe/pipe_setup.c \
 			$(SRC_DIR)/executor/redirections/redirections.c \
 			$(SRC_DIR)/executor/redirections/redirections_open.c \

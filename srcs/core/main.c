@@ -73,6 +73,11 @@ static void	shell_loop(t_shell *shell)
 	{
 		shell->ast = NULL;
 		line = readline("minishell$ ");
+		if (g_signal == SIGINT)
+		{
+			g_signal = 0;
+			shell->exit_status = 130;
+		}
 		if (!line)
 		{
 			write(STDOUT_FILENO, "exit\n", 5);
