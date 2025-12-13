@@ -37,11 +37,3 @@ int	exec_builtin(t_ast *node, t_shell *shell)
 		return (builtin_unset(node->argv, shell));
 	return (1);
 }
-
-int	exec_builtin_child(t_ast *node, t_shell *shell)
-{
-	int	code;
-
-	code = exec_builtin(node, shell);
-	exit(code);
-}

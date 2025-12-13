@@ -47,19 +47,3 @@ char	*extract_word(char *line, int *i)
 	word = ft_substr(line, start, len);
 	return (word);
 }
-
-int	has_quotes(char *str)
-{
-	int	i;
-
-	if (!str)
-		return (0);
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\'' || str[i] == '"')
-			return (1);
-		i++;
-	}
-	return (0);
-}
