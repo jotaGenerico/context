@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balão Interativo</title>
+    <style>
+        /* Estilos para o balão */
+        .balao {
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            border-radius: 50%; /* Bordas arredondadas para forma de círculo */
+            margin: 50px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+    </style>
+    <!-- Inclui jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <div class="balao"></div>
+
+    <script>
+        $(document).ready(function() {
+            // Variáveis para controle do estado do balão
+            let tamanhoAtual = 200;
+            let corAtual = 0; // 0: vermelho, 1: verde, 2: azul
+
+            // Função para mudar o tamanho e a cor do balão
+            function mudarTamanho() {
+                // Aumenta o tamanho em 10px
+                tamanhoAtual += 10;
+                // Se o tamanho for maior que 420px, volta ao tamanho original (200px)
+                if (tamanhoAtual > 420) {
+                    tamanhoAtual = 200;
+                    corAtual = 0; // Reinicia a cor para vermelho
+                }
+
+                // Altera o tamanho do balão usando jQuery
+                $('.balao').css({
+                    'width': tamanhoAtual + 'px',
+                    'height': tamanhoAtual + 'px'
+                });
+
+                // Altera a cor do balão
+                mudarCor();
+            }
+
+            // Função para mudar a cor do balão
+            function mudarCor() {
+                const cores = ['red', 'green', 'blue'];
+                corAtual = (corAtual + 1) % cores.length; // Avança para a próxima cor
+
+                $('.balao').css('background-color', cores[corAtual]);
+            }
+
+            // Evento de clique no balão usando jQuery
+            $('.balao').on('click', mudarTamanho);
+
+            // Evento de mouseleave para diminuir o balão
+            $('.balao').on('mouseleave', function() {
+                // Reduz o tamanho em 5px
+                tamanhoAtual -= 5;
+                // Garante que o tamanho não seja menor que 200px
+                if (tamanhoAtual < 200) {
+                    tamanhoAtual = 200;
+                    corAtual = 2; // Define a cor para azul (última na sequência inversa)
+                }
+
+                // Altera o tamanho do balão usando jQuery
+                $('.balao').css({
+                    'width': tamanhoAtual + 'px',
+                    'height': tamanhoAtual + 'px'
+                });
+
+                // Altera a cor do balão
+                mudarCor();
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,2 @@
+objetivo apenas criar um diretorio, mas diretorio vazio nao sobe pro git.
+por isso esse arquivo explicando pq aparenta nao ter sido feito nada.

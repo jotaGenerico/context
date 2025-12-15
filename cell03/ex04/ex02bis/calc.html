@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Básica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .calculator {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        .calculator input[type="text"], .calculator select, .calculator input[type="submit"] {
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .calculator input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .calculator input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <!-- Inclui jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Calculadora Básica</h2>
+        <form id="calcForm">
+            <input type="text" id="num1" placeholder="Número inteiro positivo" required>
+            <select id="operador" required>
+                <option value="+">+</option>
+                <option value="-">-</option>
+                <option value="*">*</option>
+                <option value="/">/</option>
+                <option value="%">%</option>
+            </select>
+            <input type="text" id="num2" placeholder="Número inteiro positivo" required>
+            <input type="submit" value="Try me!">
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Evento de submit do formulário usando jQuery
+            $('#calcForm').submit(function(event) {
+                event.preventDefault(); // Evita o envio padrão do formulário
+
+                // Captura dos valores dos campos usando jQuery
+                let num1 = parseInt($('#num1').val());
+                let num2 = parseInt($('#num2').val());
+                let operador = $('#operador').val();
+                
+                // Verifica se ambos os números são inteiros positivos
+                if (Number.isInteger(num1) && num1 >= 0 && Number.isInteger(num2) && num2 >= 0) {
+                    // Realiza o cálculo com base no operador selecionado
+                    let resultado;
+                    switch (operador) {
+                        case '+':
+                            resultado = num1 + num2;
+                            break;
+                        case '-':
+                            resultado = num1 - num2;
+                            break;
+                        case '*':
+                            resultado = num1 * num2;
+                            break;
+                        case '/':
+                            if (num2 === 0) {
+                                alert("It's over 9000!");
+                                console.error("Divisão por zero!");
+                                return false;
+                            }
+                            resultado = num1 / num2;
+                            break;
+                        case '%':
+                            if (num2 === 0) {
+                                alert("It's over 9000!");
+                                console.error("Módulo por zero!");
+                                return false;
+                            }
+                            resultado = num1 % num2;
+                            break;
+                        default:
+                            alert("Operador inválido!");
+                            console.error("Operador inválido:", operador);
+                            return false;
+                    }
+                    
+                    // Exibe o resultado no console
+                    console.log(`Resultado: ${resultado}`);
+
+                    // Exibe o resultado em um alerta por 5 segundos
+                    mostrarResultado(resultado);
+
+                    // Limpa os campos usando jQuery
+                    $('#num1').val('');
+                    $('#num2').val('');
+
+                    return false; // Evita o envio do formulário
+                } else {
+                    alert("Error :(");
+                    console.error("Números inválidos:", num1, num2);
+                    return false;
+                }
+            });
+
+            // Pop-up a cada 30 segundos usando jQuery
+            setInterval(function() {
+                alert("Please, use me...");
+            }, 30000);
+        });
+
+        // Função para exibir o resultado por um tempo determinado
+        function mostrarResultado(resultado) {
+            alert(`O resultado é: ${resultado}`);
+
+            // Fechar automaticamente o alerta após 5 segundos
+            setTimeout(function() {
+                $('.calculator input[type="submit"]').prop('disabled', false); // Reabilita o botão
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
