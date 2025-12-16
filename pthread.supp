@@ -1,0 +1,5 @@
+{
+   ignore_libpthread_memory_errors
+   Memcheck:Leak
+   obj:*/libpthread.so.*
+}

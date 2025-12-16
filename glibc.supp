@@ -1,0 +1,41 @@
+{
+   ignore_glibc_malloc
+   Memcheck:Leak
+   obj:*/libc.so.*
+   fun:malloc
+}
+
+{
+   ignore_glibc_calloc
+   Memcheck:Leak
+   obj:*/libc.so.*
+   fun:calloc
+}
+
+{
+   ignore_glibc_printf
+   Memcheck:Leak
+   obj:*/libc.so.*
+   fun:printf
+}
+
+{
+   ignore_glibc_fprintf
+   Memcheck:Leak
+   obj:*/libc.so.*
+   fun:fprintf
+}
+
+{
+   ignore_glibc_allocate_dtv
+   Memcheck:Leak
+   obj:*/libpthread.so.*
+   fun:allocate_dtv
+}
+
+{
+   ignore_glibc_dl_allocate_tls
+   Memcheck:Leak
+   obj:*/libpthread.so.*
+   fun:_dl_allocate_tls
+}

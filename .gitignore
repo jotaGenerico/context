@@ -1,0 +1,20 @@
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Logs / coverage
+*.log
+coverage/
+
+# Node / builds (se aplicável)
+node_modules/
+dist/
+build/
+
+# Env / secrets (por precaução)
+.env
+.env.*
