@@ -24,6 +24,12 @@ void	print_status(t_philo *philo, char *status)
 	{
 		timestamp = get_time() - philo->data->start_time;
 		printf("%s%ld %d %s%s\n", color, timestamp, philo->id, status, RESET);
+#ifdef DEBUG_PRINT
+		// Linha extra em stderr com colunas alinhadas (sem cores)
+		// Ex.: [  401] P2  eating      m=3
+		fprintf(stderr, "[%6ld] P%-2d %-12s m=%-2d\n",
+				timestamp, philo->id, status, philo->meals_eaten);
+#endif
 	}
 	pthread_mutex_unlock(&philo->data->write_lock);
 }
