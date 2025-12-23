@@ -10,12 +10,12 @@
 
 // ========== CORES ANSI ==========
 # define RESET   "\033[0m"
-# define RED     "\033[1;31m"      // Morreu (vermelho forte)
-# define GREEN   "\033[1;32m"      // Pensando (verde)
-# define YELLOW  "\033[1;33m"      // Comendo (amarelo)
-# define BLUE    "\033[1;34m"      // Dormindo (azul)
-# define MAGENTA "\033[1;35m"      // Pegou garfo (magenta)
-# define CYAN    "\033[1;36m"      // Info (ciano)
+# define RED     "\033[1;31m"
+# define GREEN   "\033[1;32m"
+# define YELLOW  "\033[1;33m"
+# define BLUE    "\033[1;34m"
+# define MAGENTA "\033[1;35m"
+# define CYAN    "\033[1;36m"
 
 // ========== ESTRUTURAS ==========
 typedef struct s_data
@@ -67,7 +67,7 @@ void	cleanup(t_table *table);
 
 // routine.c
 void	*philosopher_routine(void *arg);
-void	take_forks(t_philo *philo);
+int		take_forks(t_philo *philo);
 void	eat(t_philo *philo);
 void	philo_sleep(t_philo *philo);
 void	think(t_philo *philo);

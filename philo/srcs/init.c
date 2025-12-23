@@ -1,4 +1,4 @@
-#include "../includes/philo.h"
+#include "philo.h"
 
 static void	assign_forks(t_philo *philo, pthread_mutex_t *forks, int i, int nb)
 {

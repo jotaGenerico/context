@@ -1,11 +1,10 @@
-#include "../includes/philo.h"
+#include "philo.h"
 
 void	print_status(t_philo *philo, char *status)
 {
 	long	timestamp;
 	char	*color;
 
-	// Escolhe a cor baseada no status
 	if (!ft_strncmp(status, "died", 4))
 		color = RED;
 	else if (!ft_strncmp(status, "is thinking", 11))
@@ -18,18 +17,11 @@ void	print_status(t_philo *philo, char *status)
 		color = MAGENTA;
 	else
 		color = RESET;
-
 	pthread_mutex_lock(&philo->data->write_lock);
 	if (!is_simulation_stopped(philo->data))
 	{
 		timestamp = get_time() - philo->data->start_time;
 		printf("%s%ld %d %s%s\n", color, timestamp, philo->id, status, RESET);
-#ifdef DEBUG_PRINT
-		// Linha extra em stderr com colunas alinhadas (sem cores)
-		// Ex.: [  401] P2  eating      m=3
-		fprintf(stderr, "[%6ld] P%-2d %-12s m=%-2d\n",
-				timestamp, philo->id, status, philo->meals_eaten);
-#endif
 	}
 	pthread_mutex_unlock(&philo->data->write_lock);
 }
@@ -44,7 +36,6 @@ bool	is_simulation_stopped(t_data *data)
 	return (stopped);
 }
 
-// ✅ Adicionar ft_strncmp (precisa para comparar strings)
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t	i;
