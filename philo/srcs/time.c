@@ -1,31 +1,24 @@
 #include "philo.h"
 
-long	get_time(void)
+long	get_time_us(void)
 {
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	return (tv.tv_sec * 1000000 + tv.tv_usec);
 }
 
-long	get_elapsed_time(long start_time)
-{
-	return (get_time() - start_time);
-}
-
-void	precise_usleep(long milliseconds, t_data *data)
+void	sleep_ms(long ms, t_data *data)
 {
 	long	start;
-	long	elapsed;
+	long	target;
 
-	start = get_time();
-	while (1)
+	start = get_time_us();
+	target = ms * 1000;
+	while (get_time_us() - start < target)
 	{
-		elapsed = get_time() - start;
-		if (elapsed >= milliseconds)
+		if (is_stopped(data))
 			break ;
-		if (is_simulation_stopped(data))
-			break ;
-		usleep(100);
+		usleep(1000);
 	}
 }

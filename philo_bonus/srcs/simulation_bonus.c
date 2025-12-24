@@ -14,7 +14,6 @@ static void spawn_children(t_data *data)
             error_exit("fork failed");
             exit(1);
         } else if (pid == 0) {
-            // child process
             philo_process(data, i + 1);
         } else {
             data->pids[i] = pid;
@@ -38,10 +37,18 @@ int start_simulation_bonus(t_data *data)
     pid_t pid;
 
     data->start_time = get_time();
+
+    if (data->nb_philos == 1)
+    {
+        printf("0 1 has taken a fork\n");
+        usleep(data->time_to_die * 1000);
+        printf("%d 1 died\n", data->time_to_die);
+        return (0);
+    }
+
     setup_semaphores(data);
     spawn_children(data);
 
-    // Wait for any child to exit; non-zero => death
     while ((pid = waitpid(-1, &status, 0)) > 0) {
         if (WIFEXITED(status)) {
             int code = WEXITSTATUS(status);
@@ -50,18 +57,15 @@ int start_simulation_bonus(t_data *data)
                 if (data->must_eat_count != -1 && finished == data->nb_philos)
                     break;
             } else {
-                // child died
                 kill_all(data);
                 break;
             }
         } else if (WIFSIGNALED(status)) {
-            // treat as death
             kill_all(data);
             break;
         }
     }
 
-    // cleanup
     for (int i = 0; i < data->nb_philos; i++) {
         if (data->pids[i] > 0)
             waitpid(data->pids[i], NULL, 0);
