@@ -1,20 +1,20 @@
-#include "../includes/philo_bonus.h"
+#include "philo_bonus.h"
 
-long get_time(void)
+long	get_time_us(void)
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000000 + tv.tv_usec);
 }
 
-long get_elapsed_time(long start_time)
+void	sleep_ms(long ms)
 {
-    return get_time() - start_time;
-}
+	long	start;
+	long	target;
 
-void precise_usleep(long ms)
-{
-    long start = get_time();
-    while (get_time() - start < ms)
-        usleep(100);
+	start = get_time_us();
+	target = ms * 1000;
+	while (get_time_us() - start < target)
+		usleep(1000);
 }

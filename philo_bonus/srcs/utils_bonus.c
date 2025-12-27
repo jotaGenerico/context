@@ -1,79 +1,59 @@
-#include "../includes/philo_bonus.h"
+#include "philo_bonus.h"
 
-#define RESET   "\033[0m"
-#define RED     "\033[1;31m"
-#define GREEN   "\033[1;32m"
-#define YELLOW  "\033[1;33m"
-#define BLUE    "\033[1;34m"
-#define MAGENTA "\033[1;35m"
-
-void error_exit(const char *msg)
+void	error_exit(const char *msg)
 {
-    fprintf(stderr, "Error: %s\n", msg);
+	printf("Error: %s\n", msg);
 }
 
-void safe_print(t_data *data, int id, const char *status)
+static char	*get_color(const char *status)
 {
-    char *color;
-
-    if (!ft_strncmp(status, "died", 4))
-        color = RED;
-    else if (!ft_strncmp(status, "is thinking", 11))
-        color = GREEN;
-    else if (!ft_strncmp(status, "is eating", 9))
-        color = YELLOW;
-    else if (!ft_strncmp(status, "is sleeping", 11))
-        color = BLUE;
-    else if (!ft_strncmp(status, "has taken a fork", 16))
-        color = MAGENTA;
-    else
-        color = RESET;
-
-    sem_wait(data->print);
-    long ts = get_time() - data->start_time;
-    printf("%s%ld %d %s%s\n", color, ts, id, status, RESET);
-    sem_post(data->print);
+	if (status[0] == 'd')
+		return (RED);
+	if (status[0] == 'i' && status[3] == 't')
+		return (GREEN);
+	if (status[0] == 'i' && status[3] == 'e')
+		return (YELLOW);
+	if (status[0] == 'i' && status[3] == 's')
+		return (BLUE);
+	if (status[0] == 'h')
+		return (MAGENTA);
+	return (RESET);
 }
 
-void cleanup_semaphores(void)
+void	safe_print(t_data *data, int id, const char *status)
 {
-    sem_unlink(SEM_FORKS);
-    sem_unlink(SEM_PRINT);
-    sem_unlink(SEM_LIMIT);
+	char	*color;
+	long	ts;
+
+	color = get_color(status);
+	sem_wait(data->print);
+	ts = (get_time_us() - data->start_time) / 1000;
+	printf("%s%ld %d %s%s\n", color, ts, id, status, RESET);
+	sem_post(data->print);
 }
 
-void setup_semaphores(t_data *data)
+void	cleanup_semaphores(void)
 {
-    cleanup_semaphores();
-    data->forks = sem_open(SEM_FORKS, O_CREAT | O_EXCL, 0644, data->nb_philos);
-    if (data->forks == SEM_FAILED) {
-        error_exit("sem_open(forks) failed");
-        exit(1);
-    }
-    data->print = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
-    if (data->print == SEM_FAILED) {
-        error_exit("sem_open(print) failed");
-        sem_close(data->forks);
-        cleanup_semaphores();
-        exit(1);
-    }
-    data->limit = sem_open(SEM_LIMIT, O_CREAT | O_EXCL, 0644, data->nb_philos - 1);
-    if (data->limit == SEM_FAILED) {
-        error_exit("sem_open(limit) failed");
-        sem_close(data->forks);
-        sem_close(data->print);
-        cleanup_semaphores();
-        exit(1);
-    }
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_PRINT);
+	sem_unlink(SEM_LIMIT);
 }
 
-int ft_strncmp(const char *s1, const char *s2, size_t n)
+void	setup_semaphores(t_data *data)
 {
-    size_t i = 0;
-    while (i < n && (s1[i] || s2[i])) {
-        if (s1[i] != s2[i])
-            return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-        i++;
-    }
-    return 0;
+	cleanup_semaphores();
+	data->forks = sem_open(SEM_FORKS, O_CREAT | O_EXCL, 0644,
+			data->nb_philos);
+	if (data->forks == SEM_FAILED)
+		return (error_exit("sem_open(forks) failed"), exit(1));
+	data->print = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
+	if (data->print == SEM_FAILED)
+		return (sem_close(data->forks), cleanup_semaphores(),
+			error_exit("sem_open(print) failed"), exit(1));
+	data->limit = sem_open(SEM_LIMIT, O_CREAT | O_EXCL, 0644,
+			data->nb_philos - 1);
+	if (data->limit == SEM_FAILED)
+		return (sem_close(data->forks), sem_close(data->print),
+			cleanup_semaphores(), error_exit("sem_open(limit) failed"),
+			exit(1));
 }
