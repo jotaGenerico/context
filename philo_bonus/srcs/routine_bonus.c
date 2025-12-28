@@ -48,10 +48,7 @@ static void	*death_monitor(void *arg)
 	while (1)
 	{
 		if (is_finished(ph->data))
-		{
-			kill(0, SIGKILL);
 			exit(1);
-		}
 		sem_wait(ph->data->death);
 		time_since_meal = get_time_us() - ph->last_meal;
 		if (time_since_meal >= ph->data->time_to_die)
@@ -59,7 +56,6 @@ static void	*death_monitor(void *arg)
 			safe_print(ph->data, ph->id, "died");
 			sem_post(ph->data->finish);
 			sem_wait(ph->data->print);
-			kill(0, SIGKILL);
 			exit(1);
 		}
 		sem_post(ph->data->death);

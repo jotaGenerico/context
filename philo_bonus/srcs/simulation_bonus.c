@@ -1,4 +1,4 @@
-#include "philo_bonus.h"
+#include "../includes/philo_bonus.h"
 
 static void	spawn_children(t_data *data);
 static void	kill_all(t_data *data);
@@ -17,7 +17,6 @@ int	start_simulation_bonus(t_data *data)
 	setup_semaphores(data);
 	spawn_children(data);
 	wait_all(data);
-	kill_all(data);
 	return (0);
 }
 
@@ -45,14 +44,22 @@ static void	spawn_children(t_data *data)
 
 static void	wait_all(t_data *data)
 {
-	int	i;
+	int		i;
+	int		status;
+	pid_t	pid;
 
 	i = 0;
 	while (i < data->nb_philos)
 	{
-		waitpid(-1, NULL, 0);
+		pid = waitpid(-1, &status, 0);
+		if (pid > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 1)
+		{
+			kill_all(data);
+			return ;
+		}
 		i++;
 	}
+	kill_all(data);
 }
 
 static void	kill_all(t_data *data)
@@ -66,10 +73,18 @@ static void	kill_all(t_data *data)
 			kill(data->pids[i], SIGKILL);
 		i++;
 	}
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		if (data->pids[i] > 0)
+			waitpid(data->pids[i], NULL, WNOHANG);
+		i++;
+	}
 	sem_close(data->forks);
 	sem_close(data->print);
 	sem_close(data->death);
 	sem_close(data->finish);
 	cleanup_semaphores();
-	free(data->pids);
+	if (data->pids)
+		free(data->pids);
 }

@@ -22,14 +22,6 @@ bool	is_finished(t_data *data)
 	return (val > 0);
 }
 
-void	cleanup_semaphores(void)
-{
-	sem_unlink(SEM_FORKS);
-	sem_unlink(SEM_PRINT);
-	sem_unlink(SEM_DEATH);
-	sem_unlink(SEM_FINISH);
-}
-
 void	setup_semaphores(t_data *data)
 {
 	cleanup_semaphores();
@@ -37,20 +29,32 @@ void	setup_semaphores(t_data *data)
 			data->nb_philos);
 	if (data->forks == SEM_FAILED)
 		return (error_exit("sem_open(forks) failed"), exit(1));
+	sem_unlink(SEM_FORKS);
 	data->print = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
 	if (data->print == SEM_FAILED)
 		return (sem_close(data->forks), cleanup_semaphores(),
 			error_exit("sem_open(print) failed"), exit(1));
+	sem_unlink(SEM_PRINT);
 	data->death = sem_open(SEM_DEATH, O_CREAT | O_EXCL, 0644, 1);
 	if (data->death == SEM_FAILED)
 		return (sem_close(data->forks), sem_close(data->print),
 			cleanup_semaphores(), error_exit("sem_open(death) failed"),
 			exit(1));
+	sem_unlink(SEM_DEATH);
 	data->finish = sem_open(SEM_FINISH, O_CREAT | O_EXCL, 0644, 0);
 	if (data->finish == SEM_FAILED)
 		return (sem_close(data->forks), sem_close(data->print),
 			sem_close(data->death), cleanup_semaphores(),
 			error_exit("sem_open(finish) failed"), exit(1));
+	sem_unlink(SEM_FINISH);
+}
+
+void	cleanup_semaphores(void)
+{
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_PRINT);
+	sem_unlink(SEM_DEATH);
+	sem_unlink(SEM_FINISH);
 }
 
 static char	*get_color(const char *status)
