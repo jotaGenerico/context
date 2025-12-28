@@ -2,7 +2,7 @@
 
 static void	spawn_children(t_data *data);
 static void	kill_all(t_data *data);
-static int	wait_children(t_data *data);
+static void	wait_all(t_data *data);
 
 int	start_simulation_bonus(t_data *data)
 {
@@ -16,30 +16,9 @@ int	start_simulation_bonus(t_data *data)
 	}
 	setup_semaphores(data);
 	spawn_children(data);
-	return (wait_children(data));
-}
-
-static int	wait_children(t_data *data)
-{
-	int		finished;
-	int		status;
-	pid_t	pid;
-
-	finished = 0;
-	pid = waitpid(-1, &status, 0);
-	while (pid > 0)
-	{
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
-		{
-			finished++;
-			if (data->must_eat_count != -1 && finished == data->nb_philos)
-				break ;
-		}
-		else
-			return (kill_all(data), 0);
-		pid = waitpid(-1, &status, 0);
-	}
-	return (kill_all(data), 0);
+	wait_all(data);
+	kill_all(data);
+	return (0);
 }
 
 static void	spawn_children(t_data *data)
@@ -64,6 +43,18 @@ static void	spawn_children(t_data *data)
 	}
 }
 
+static void	wait_all(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		waitpid(-1, NULL, 0);
+		i++;
+	}
+}
+
 static void	kill_all(t_data *data)
 {
 	int	i;
@@ -72,19 +63,13 @@ static void	kill_all(t_data *data)
 	while (i < data->nb_philos)
 	{
 		if (data->pids[i] > 0)
-			kill(data->pids[i], SIGTERM);
-		i++;
-	}
-	i = 0;
-	while (i < data->nb_philos)
-	{
-		if (data->pids[i] > 0)
-			waitpid(data->pids[i], NULL, 0);
+			kill(data->pids[i], SIGKILL);
 		i++;
 	}
 	sem_close(data->forks);
 	sem_close(data->print);
-	sem_close(data->limit);
+	sem_close(data->death);
+	sem_close(data->finish);
 	cleanup_semaphores();
 	free(data->pids);
 }

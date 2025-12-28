@@ -16,3 +16,8 @@ int	main(int ac, char **av)
 		return (1);
 	return (0);
 }
+
+void	error_exit(const char *msg)
+{
+	printf("Error: %s\n", msg);
+}

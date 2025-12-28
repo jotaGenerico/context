@@ -10,7 +10,8 @@
 
 # define SEM_FORKS "/philo_forks"
 # define SEM_PRINT "/philo_print"
-# define SEM_LIMIT "/philo_limit"
+# define SEM_DEATH "/philo_death"
+# define SEM_FINISH "/philo_finish"
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -34,7 +35,8 @@ typedef struct s_data
 	long	start_time;
 	sem_t	*forks;
 	sem_t	*print;
-	sem_t	*limit;
+	sem_t	*death;
+	sem_t	*finish;
 	pid_t	*pids;
 }	t_data;
 
@@ -46,16 +48,16 @@ typedef struct s_philo
 	t_data	*data;
 }	t_philo;
 
-int		parse_args_bonus(int ac, char **av, t_data *data);
+void	cleanup_semaphores(void);
+void	error_exit(const char *msg);
 int		ft_atoi(const char *str);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 long	get_time_us(void);
-void	sleep_ms(long ms);
-void	safe_print(t_data *data, int id, const char *status);
-void	error_exit(const char *msg);
-void	setup_semaphores(t_data *data);
-void	cleanup_semaphores(void);
+bool	is_finished(t_data *data);
+int		parse_args_bonus(int ac, char **av, t_data *data);
 void	philo_process(t_data *data, int id);
+void	safe_print(t_data *data, int id, const char *status);
+void	setup_semaphores(t_data *data);
 int		start_simulation_bonus(t_data *data);
 
 #endif

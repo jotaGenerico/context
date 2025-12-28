@@ -1,72 +1,85 @@
 #include "philo_bonus.h"
 
-static void	check_death(t_philo *ph);
-static void	smart_sleep(t_philo *ph, long ms);
+static void	*death_monitor(void *arg);
 static void	take_forks_and_eat(t_philo *ph);
+static void	philo_routine(t_philo *ph);
 
 void	philo_process(t_data *data, int id)
 {
-	t_philo	ph;
+	t_philo		ph;
+	pthread_t	monitor;
 
 	ph.id = id;
 	ph.meals_eaten = 0;
 	ph.data = data;
 	ph.last_meal = get_time_us();
-	if (id % 2 != 0)
+	pthread_create(&monitor, NULL, death_monitor, &ph);
+	pthread_detach(monitor);
+	if (id % 2 == 0)
 		usleep(100);
-	while (1)
+	philo_routine(&ph);
+	exit(0);
+}
+
+static void	philo_routine(t_philo *ph)
+{
+	while (!is_finished(ph->data))
 	{
-		safe_print(data, id, "is thinking");
-		take_forks_and_eat(&ph);
-		if (data->must_eat_count != -1
-			&& ph.meals_eaten >= data->must_eat_count)
-			exit(0);
-		safe_print(data, id, "is sleeping");
-		smart_sleep(&ph, data->time_to_sleep / 1000);
+		safe_print(ph->data, ph->id, "is thinking");
+		if (is_finished(ph->data))
+			break ;
+		take_forks_and_eat(ph);
+		if (is_finished(ph->data))
+			break ;
+		if (ph->data->must_eat_count != -1
+			&& ph->meals_eaten >= ph->data->must_eat_count)
+			break ;
+		safe_print(ph->data, ph->id, "is sleeping");
+		usleep(ph->data->time_to_sleep);
 	}
 }
 
-static void	check_death(t_philo *ph)
+static void	*death_monitor(void *arg)
 {
+	t_philo	*ph;
 	long	time_since_meal;
 
-	time_since_meal = get_time_us() - ph->last_meal;
-	if (time_since_meal >= ph->data->time_to_die)
+	ph = (t_philo *)arg;
+	while (1)
 	{
-		safe_print(ph->data, ph->id, "died");
-		exit(1);
+		if (is_finished(ph->data))
+		{
+			kill(0, SIGKILL);
+			exit(1);
+		}
+		sem_wait(ph->data->death);
+		time_since_meal = get_time_us() - ph->last_meal;
+		if (time_since_meal >= ph->data->time_to_die)
+		{
+			safe_print(ph->data, ph->id, "died");
+			sem_post(ph->data->finish);
+			sem_wait(ph->data->print);
+			kill(0, SIGKILL);
+			exit(1);
+		}
+		sem_post(ph->data->death);
+		usleep(1000);
 	}
-}
-
-static void	smart_sleep(t_philo *ph, long ms)
-{
-	long	start;
-	long	target;
-
-	start = get_time_us();
-	target = ms * 1000;
-	while (get_time_us() - start < target)
-	{
-		check_death(ph);
-		usleep(100);
-	}
+	return (NULL);
 }
 
 static void	take_forks_and_eat(t_philo *ph)
 {
-	check_death(ph);
-	sem_wait(ph->data->limit);
-	check_death(ph);
 	sem_wait(ph->data->forks);
 	safe_print(ph->data, ph->id, "has taken a fork");
-	check_death(ph);
 	sem_wait(ph->data->forks);
 	safe_print(ph->data, ph->id, "has taken a fork");
+	sem_wait(ph->data->death);
 	ph->last_meal = get_time_us();
 	ph->meals_eaten++;
+	sem_post(ph->data->death);
 	safe_print(ph->data, ph->id, "is eating");
-	smart_sleep(ph, ph->data->time_to_eat / 1000);
+	usleep(ph->data->time_to_eat);
 	sem_post(ph->data->forks);
 	sem_post(ph->data->forks);
-	sem_post(ph->data->limit);
 }
