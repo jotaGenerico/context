@@ -10,7 +10,7 @@ void	start_simulation(t_table *table)
 	{
 		printf("0 1 has taken a fork\n");
 		usleep(table->data.time_to_die);
-		printf("%ld 1 died\n", table->data.time_to_die / 1000);
+		printf("%s%ld 1 died%s\n", RED, table->data.time_to_die / 1000, RESET);
 		return ;
 	}
 	if (create_threads(table) != 0)

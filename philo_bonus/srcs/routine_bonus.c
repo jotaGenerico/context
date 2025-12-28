@@ -13,11 +13,10 @@ void	philo_process(t_data *data, int id)
 	ph.data = data;
 	ph.last_meal = get_time_us();
 	if (id % 2 != 0)
-		usleep(1000);
+		usleep(100);
 	while (1)
 	{
 		safe_print(data, id, "is thinking");
-		usleep(1000);
 		take_forks_and_eat(&ph);
 		if (data->must_eat_count != -1
 			&& ph.meals_eaten >= data->must_eat_count)
@@ -49,7 +48,7 @@ static void	smart_sleep(t_philo *ph, long ms)
 	while (get_time_us() - start < target)
 	{
 		check_death(ph);
-		usleep(500);
+		usleep(100);
 	}
 }
 

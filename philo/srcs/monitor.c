@@ -1,7 +1,8 @@
-#include "philo.h"
+#include "../includes/philo.h"
 
 static bool	check_all_ate(t_table *table);
 static bool	check_death(t_table *table);
+static void	print_death(t_table *table, int i, long current);
 
 void	*monitor_routine(void *arg)
 {
@@ -17,6 +18,17 @@ void	*monitor_routine(void *arg)
 		usleep(1000);
 	}
 	return (NULL);
+}
+
+static void	print_death(t_table *table, int i, long current)
+{
+	pthread_mutex_lock(&table->data.stop_lock);
+	table->data.stop = true;
+	pthread_mutex_unlock(&table->data.stop_lock);
+	pthread_mutex_lock(&table->data.print_lock);
+	printf("%s%ld %d died%s\n", RED,
+		(current - table->data.start_time) / 1000, i + 1, RESET);
+	pthread_mutex_unlock(&table->data.print_lock);
 }
 
 static bool	check_death(t_table *table)
@@ -36,16 +48,7 @@ static bool	check_death(t_table *table)
 			time_since_meal = current - table->philos[i].last_meal;
 		pthread_mutex_unlock(&table->meal_locks[i]);
 		if (time_since_meal >= table->data.time_to_die)
-		{
-			pthread_mutex_lock(&table->data.stop_lock);
-			table->data.stop = true;
-			pthread_mutex_unlock(&table->data.stop_lock);
-			pthread_mutex_lock(&table->data.print_lock);
-			printf("%ld %d died\n",
-				(current - table->data.start_time) / 1000, i + 1);
-			pthread_mutex_unlock(&table->data.print_lock);
-			return (true);
-		}
+			return (print_death(table, i, current), true);
 		i++;
 	}
 	return (false);
