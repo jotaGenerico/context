@@ -1,4 +1,4 @@
-#include "../includes/philo_bonus.h"
+#include "philo_bonus.h"
 
 static void	spawn_children(t_data *data);
 static void	kill_all(t_data *data);
@@ -84,6 +84,7 @@ static void	kill_all(t_data *data)
 	sem_close(data->print);
 	sem_close(data->death);
 	sem_close(data->finish);
+	sem_close(data->control);
 	cleanup_semaphores();
 	if (data->pids)
 		free(data->pids);

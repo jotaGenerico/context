@@ -12,6 +12,7 @@
 # define SEM_PRINT "/philo_print"
 # define SEM_DEATH "/philo_death"
 # define SEM_FINISH "/philo_finish"
+# define SEM_CONTROL "/philo_control"
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -37,6 +38,7 @@ typedef struct s_data
 	sem_t	*print;
 	sem_t	*death;
 	sem_t	*finish;
+	sem_t	*control;
 	pid_t	*pids;
 }	t_data;
 
