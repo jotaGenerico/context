@@ -1,91 +1,110 @@
 #include "philo_bonus.h"
 
-static void	spawn_children(t_data *data);
-static void	kill_all(t_data *data);
-static void	wait_all(t_data *data);
-
-int	start_simulation_bonus(t_data *data)
+int	table_step(t_state *m)
 {
-	data->start_time = get_time_us();
-	if (data->nb_philos == 1)
+	if (is_finished(m))
+		return (0);
+	sem_wait(m->forks);
+	if (get_time_ms() <= m->die_time && (m->meals_eaten < m->p->must_eat_count
+			|| m->p->must_eat_count == -1))
+		eat(m);
+	else
 	{
-		printf("0 1 has taken a fork\n");
-		usleep(data->time_to_die);
-		printf("%s%ld 1 died%s\n", RED, data->time_to_die / 1000, RESET);
+		sem_post(m->forks);
+		if (get_time_ms() + m->p->time_to_eat > m->die_time)
+			die(m);
 		return (0);
 	}
-	setup_semaphores(data);
-	spawn_children(data);
-	wait_all(data);
-	return (0);
+	if (is_finished(m))
+		return (0);
+	if (get_time_ms() + m->p->time_to_sleep > m->die_time)
+	{
+		m->die_time -= m->p->time_to_eat;
+		die(m);
+		return (0);
+	}
+	else
+		sleep_action(m);
+	think(m);
+	return (1);
 }
 
-static void	spawn_children(t_data *data)
+void	*philo_routine(t_state *m)
+{
+	pthread_t	thread;
+	int			cont;
+
+	pthread_create(&thread, NULL, check_death, (void *)m);
+	m->die_time = m->p->start_time + m->p->time_to_die;
+	if (m->index % 2 == 0)
+		wait_until(get_time_ms() + m->p->time_to_eat);
+	cont = 1;
+	while (cont)
+		cont = table_step(m);
+	pthread_join(thread, NULL);
+	return (NULL);
+}
+
+void	create_processes(t_state *states, t_params *params)
 {
 	int		i;
 	pid_t	pid;
 
-	data->pids = malloc(sizeof(pid_t) * data->nb_philos);
-	if (!data->pids)
-		return (error_exit("Failed to allocate pids"), exit(1));
 	i = 0;
-	while (i < data->nb_philos)
+	while (i < params->num_philos)
 	{
 		pid = fork();
-		if (pid < 0)
-			return (error_exit("fork failed"), exit(1));
-		else if (pid == 0)
-			philo_process(data, i + 1);
-		else
-			data->pids[i] = pid;
-		i++;
-	}
-}
-
-static void	wait_all(t_data *data)
-{
-	int		i;
-	int		status;
-	pid_t	pid;
-
-	i = 0;
-	while (i < data->nb_philos)
-	{
-		pid = waitpid(-1, &status, 0);
-		if (pid > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 1)
+		if (pid == 0)
 		{
-			kill_all(data);
+			init_state(states, params, i);
+			philo_routine(states);
 			return ;
 		}
-		i++;
+		if (pid != -1)
+			i++;
 	}
-	kill_all(data);
+	if (pid != 0)
+		wait_processes(params);
+	sem_close(states->dead);
+	sem_close(states->pr);
+	sem_close(states->forks);
+	sem_close(states->finished);
 }
 
-static void	kill_all(t_data *data)
+void	wait_processes(t_params *params)
 {
 	int	i;
 
 	i = 0;
-	while (i < data->nb_philos)
+	while (i < params->num_philos)
 	{
-		if (data->pids[i] > 0)
-			kill(data->pids[i], SIGKILL);
+		waitpid(-1, NULL, 0);
 		i++;
 	}
-	i = 0;
-	while (i < data->nb_philos)
+}
+
+void	*check_death(void *m)
+{
+	t_state	*state;
+
+	state = (t_state *)m;
+	while (1)
 	{
-		if (data->pids[i] > 0)
-			waitpid(data->pids[i], NULL, WNOHANG);
-		i++;
+		if (is_finished(m))
+		{
+			sem_unlink("/finished");
+			kill(0, SIGKILL);
+			return (NULL);
+		}
+		else
+		{
+			sem_wait(state->times_eaten_s);
+			if (state->meals_eaten == state->p->must_eat_count)
+			{
+				sem_post(state->times_eaten_s);
+				return (NULL);
+			}
+			sem_post(state->times_eaten_s);
+		}
 	}
-	sem_close(data->forks);
-	sem_close(data->print);
-	sem_close(data->death);
-	sem_close(data->finish);
-	sem_close(data->control);
-	cleanup_semaphores();
-	if (data->pids)
-		free(data->pids);
 }

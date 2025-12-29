@@ -1,81 +1,92 @@
 #include "philo_bonus.h"
 
-static int	is_valid_number(char *str);
-
-int	ft_atoi(const char *str)
+int	check_int(int sign, int *n)
 {
-	int	result;
+	if (!sign && *n == INT_MIN)
+		return (2);
+	if (*n < 0 && *n != INT_MIN)
+		return (2);
+	return (0);
+}
 
-	result = 0;
-	while (*str == ' ' || (*str >= 9 && *str <= 13))
+int	ft_atoi(const char *str, int *n)
+{
+	int	sign;
+
+	sign = 0;
+	*n = 0;
+	if (*str == '-')
+		sign = 1;
+	if (*str == '-' || *str == '+')
 		str++;
-	if (*str == '+')
-		str++;
+	if (*str < '0' && *str > '9')
+		return (-1);
 	while (*str >= '0' && *str <= '9')
 	{
-		result = result * 10 + (*str - '0');
+		*n *= 10;
+		*n += *str - '0';
+		if (check_int(sign, n))
+			return (2);
 		str++;
 	}
-	return (result);
-}
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < n && (s1[i] || s2[i]))
-	{
-		if (s1[i] != s2[i])
-			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-		i++;
-	}
-	return (0);
-}
-
-int	parse_args_bonus(int ac, char **av, t_data *data)
-{
-	int	i;
-
-	i = 1;
-	while (i < ac)
-	{
-		if (!is_valid_number(av[i]))
-			return (error_exit("Invalid argument"), 1);
-		i++;
-	}
-	data->nb_philos = ft_atoi(av[1]);
-	data->time_to_die = ft_atoi(av[2]) * 1000;
-	data->time_to_eat = ft_atoi(av[3]) * 1000;
-	data->time_to_sleep = ft_atoi(av[4]) * 1000;
-	if (ac == 6)
-		data->must_eat_count = ft_atoi(av[5]);
-	else
-		data->must_eat_count = -1;
-	data->start_time = 0;
-	data->pids = NULL;
-	if (data->nb_philos < 1 || data->nb_philos > 200)
-		return (error_exit("Invalid number of philosophers"), 1);
-	if (data->time_to_die < 60000 || data->time_to_eat < 60000
-		|| data->time_to_sleep < 60000)
-		return (error_exit("Time values must be >= 60ms"), 1);
-	return (0);
-}
-
-static int	is_valid_number(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (str[i] == '+')
-		i++;
-	if (!str[i])
+	if (sign)
+		*n *= -1;
+	if (*str == '\0')
 		return (0);
-	while (str[i])
-	{
-		if (str[i] < '0' || str[i] > '9')
-			return (0);
-		i++;
-	}
 	return (1);
+}
+
+int	check_ll(int sign, t_msec *n)
+{
+	if (!sign && *n == LLONG_MIN)
+		return (2);
+	if (*n < 0 && *n != LLONG_MIN)
+		return (2);
+	return (0);
+}
+
+int	ft_atoll(const char *str, t_msec *n)
+{
+	int	sign;
+
+	sign = 0;
+	*n = 0;
+	if (*str == '+')
+		str++;
+	if (*str < '0' && *str > '9')
+		return (-1);
+	while (*str >= '0' && *str <= '9')
+	{
+		*n *= 10;
+		*n += *str - '0';
+		if (check_ll(sign, n))
+			return (2);
+		str++;
+	}
+	if (*str == '\0')
+		return (0);
+	return (1);
+}
+
+int	parse_args(int argc, char **argv, t_params *params)
+{
+	params->must_eat_count = -1;
+	if (argc != 6 && argc != 5)
+		return (1);
+	if (ft_atoi(argv[1], &params->num_philos))
+		return (1);
+	if (ft_atoll(argv[2], &params->time_to_die))
+		return (1);
+	if (ft_atoll(argv[3], &params->time_to_eat))
+		return (1);
+	if (ft_atoll(argv[4], &params->time_to_sleep))
+		return (1);
+	if (argc == 6)
+	{
+		if (ft_atoi(argv[5], &params->must_eat_count))
+			return (1);
+	}
+	if (params->num_philos == 0 || params->must_eat_count == 0)
+		return (1);
+	return (0);
 }

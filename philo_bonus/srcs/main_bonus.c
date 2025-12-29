@@ -1,23 +1,35 @@
 #include "philo_bonus.h"
 
-int	main(int ac, char **av)
+int	main(int argc, char **argv)
 {
-	t_data	data;
+	t_params	params;
+	t_state		state;
 
-	if (ac != 5 && ac != 6)
+	if (parse_args(argc, argv, &params))
 	{
-		error_exit("Usage: ./philo_bonus nb_philos time_die time_eat "
-			"time_sleep [must_eat]");
-		return (1);
+		print_usage();
+		return (0);
 	}
-	if (parse_args_bonus(ac, av, &data) != 0)
-		return (1);
-	if (start_simulation_bonus(&data) != 0)
-		return (1);
+	params.start_time = get_time_ms();
+	init_resources(&state, &params);
+	if (params.num_philos == 1)
+	{
+		printf("%lld %d %s\n", (long long)0, 1, "has taken a fork");
+		wait_until(params.start_time + params.time_to_die);
+		printf("%lld %d died\n", get_time_ms() - params.start_time, 1);
+		return (0);
+	}
+	create_processes(&state, &params);
+	sem_unlink("/forks");
+	sem_unlink("/pr");
+	sem_unlink("/dead");
+	sem_unlink("/finished");
 	return (0);
 }
 
-void	error_exit(const char *msg)
+void	print_usage(void)
 {
-	printf("Error: %s\n", msg);
+	printf("Invalid Argument\nUsage: program_name number_of_philosophers "
+		"time_to_die time_to_eat time_to_sleep"
+		" [number_of_times_each_philosopher_must_eat]\n");
 }

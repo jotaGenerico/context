@@ -1,61 +1,61 @@
 #include "philo_bonus.h"
 
-static sem_t	*_open_sem(const char *name, int val)
+void	init_state(t_state *state, t_params *params, int i)
 {
-	sem_t	*sem;
-
-	sem_unlink(name);
-	sem = sem_open(name, O_CREAT | O_EXCL, 0644, val);
-	if (sem == SEM_FAILED)
-		exit(1);
-	return (sem);
+	state->index = i;
+	state->meals_eaten = 0;
+	state->p = params;
 }
 
-void	setup_semaphores(t_data *data)
+int	init_resources(t_state *state, t_params *params)
 {
-	int	limit;
-
-	cleanup_semaphores();
-	if (data->nb_philos > 1)
-		limit = (data->nb_philos + 1) / 2;
-	else
-		limit = 1;
-	data->forks = _open_sem(SEM_FORKS, data->nb_philos);
-	data->print = _open_sem(SEM_PRINT, 1);
-	data->death = _open_sem(SEM_DEATH, 1);
-	data->finish = _open_sem(SEM_FINISH, 0);
-	data->control = _open_sem(SEM_CONTROL, limit);
+	sem_unlink("/forks");
+	sem_unlink("/pr");
+	sem_unlink("/dead");
+	sem_unlink("/times_eaten_s");
+	sem_unlink("/finished");
+	state->forks = sem_open("/forks", O_CREAT, 0644, params->num_philos);
+	state->times_eaten_s = sem_open("/times_eaten_s", O_CREAT, 0644, 1);
+	state->dead = sem_open("/dead", O_CREAT, 0644, 1);
+	state->pr = sem_open("/pr", O_CREAT, 0644, 1);
+	sem_unlink("/forks");
+	sem_unlink("/pr");
+	sem_unlink("/dead");
+	sem_unlink("/times_eaten_s");
+	return (0);
 }
 
-void	cleanup_semaphores(void)
+void	print_status(t_state *m, enum e_print print)
 {
-	sem_unlink(SEM_FORKS);
-	sem_unlink(SEM_PRINT);
-	sem_unlink(SEM_DEATH);
-	sem_unlink(SEM_FINISH);
-	sem_unlink(SEM_CONTROL);
-}
+	const char	*msg[] = {
+		"has taken a fork", "is eating", "is sleeping",
+		"is thinking", "died"
+	};
 
-void	safe_print(t_data *data, int id, const char *status)
-{
-	long	ts;
-
-	sem_wait(data->print);
-	if (is_finished(data))
-	{
-		sem_post(data->print);
+	if (is_finished(m))
 		return ;
-	}
-	ts = (get_time_us() - data->start_time) / 1000;
-	printf("%ld %d %s\n", ts, id, status);
-	sem_post(data->print);
+	sem_wait(m->dead);
+	if (print == e_dead)
+		m->finished = sem_open("/finished", O_CREAT, 0644, 9999);
+	sem_post(m->dead);
+	sem_wait(m->pr);
+	printf("%lld %d %s\n", get_time_ms() - m->p->start_time, m->index + 1,
+		msg[(int)print]);
+	sem_post(m->pr);
 }
 
-bool	is_finished(t_data *data)
+int	is_finished(t_state *m)
 {
-	int	val;
+	sem_t	*finished;
 
-	if (sem_getvalue(data->finish, &val) == -1)
-		return (true);
-	return (val > 0);
+	sem_wait(m->dead);
+	finished = sem_open("/finished", 0);
+	if (finished == SEM_FAILED)
+	{
+		sem_post(m->dead);
+		return (0);
+	}
+	sem_close(finished);
+	sem_post(m->dead);
+	return (1);
 }
