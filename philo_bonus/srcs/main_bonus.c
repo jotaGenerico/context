@@ -14,9 +14,11 @@ int	main(int argc, char **argv)
 	init_resources(&state, &params);
 	if (params.num_philos == 1)
 	{
-		printf("%lld %d %s\n", (long long)0, 1, "has taken a fork");
+		printf("%s%lld %d %s%s\n", MAGENTA, (long long)0, 1,
+			"has taken a fork", RESET);
 		wait_until(params.start_time + params.time_to_die);
-		printf("%lld %d died\n", get_time_ms() - params.start_time, 1);
+		printf("%s%lld %d died%s\n", RED,
+			get_time_ms() - params.start_time, 1, RESET);
 		return (0);
 	}
 	create_processes(&state, &params);

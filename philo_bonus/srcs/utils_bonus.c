@@ -25,12 +25,28 @@ int	init_resources(t_state *state, t_params *params)
 	return (0);
 }
 
+static char	*get_color(enum e_print print)
+{
+	if (print == e_dead)
+		return (RED);
+	if (print == e_thinking)
+		return (GREEN);
+	if (print == e_eating)
+		return (YELLOW);
+	if (print == e_sleeping)
+		return (BLUE);
+	if (print == e_fork)
+		return (MAGENTA);
+	return (RESET);
+}
+
 void	print_status(t_state *m, enum e_print print)
 {
 	const char	*msg[] = {
 		"has taken a fork", "is eating", "is sleeping",
 		"is thinking", "died"
 	};
+	char		*color;
 
 	if (is_finished(m))
 		return ;
@@ -38,9 +54,10 @@ void	print_status(t_state *m, enum e_print print)
 	if (print == e_dead)
 		m->finished = sem_open("/finished", O_CREAT, 0644, 9999);
 	sem_post(m->dead);
+	color = get_color(print);
 	sem_wait(m->pr);
-	printf("%lld %d %s\n", get_time_ms() - m->p->start_time, m->index + 1,
-		msg[(int)print]);
+	printf("%s%lld %d %s%s\n", color, get_time_ms() - m->p->start_time,
+		m->index + 1, msg[(int)print], RESET);
 	sem_post(m->pr);
 }
 

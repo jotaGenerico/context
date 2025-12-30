@@ -17,6 +17,7 @@ SRCS        = $(SRC_DIR)/main_bonus.c \
               $(SRC_DIR)/parsing_bonus.c \
               $(SRC_DIR)/actions_bonus.c \
               $(SRC_DIR)/simulation_bonus.c \
+              $(SRC_DIR)/process_bonus.c \
               $(SRC_DIR)/time_bonus.c \
               $(SRC_DIR)/utils_bonus.c
 
