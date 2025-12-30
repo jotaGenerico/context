@@ -1,8 +1,9 @@
-#include "../includes/philo.h"
+#include "philo.h"
 
 static bool	check_all_ate(t_table *table);
 static bool	check_death(t_table *table);
-static void	print_death(t_table *table, int i, long current);
+static void	handle_death(t_table *table, int i, long current);
+static long	get_time_since_meal(t_philo *philo, long current, long start);
 
 void	*monitor_routine(void *arg)
 {
@@ -20,7 +21,15 @@ void	*monitor_routine(void *arg)
 	return (NULL);
 }
 
-static void	print_death(t_table *table, int i, long current)
+static long	get_time_since_meal(t_philo *philo, long current, long start)
+{
+	if (philo->last_meal == 0)
+		return (current - start);
+	else
+		return (current - philo->last_meal);
+}
+
+static void	handle_death(t_table *table, int i, long current)
 {
 	pthread_mutex_lock(&table->data.stop_lock);
 	table->data.stop = true;
@@ -42,13 +51,15 @@ static bool	check_death(t_table *table)
 	while (i < table->data.nb_philos)
 	{
 		pthread_mutex_lock(&table->meal_locks[i]);
-		if (table->philos[i].last_meal == 0)
-			time_since_meal = current - table->data.start_time;
-		else
-			time_since_meal = current - table->philos[i].last_meal;
-		pthread_mutex_unlock(&table->meal_locks[i]);
+		time_since_meal = get_time_since_meal(&table->philos[i],
+				current, table->data.start_time);
 		if (time_since_meal >= table->data.time_to_die)
-			return (print_death(table, i, current), true);
+		{
+			pthread_mutex_unlock(&table->meal_locks[i]);
+			handle_death(table, i, current);
+			return (true);
+		}
+		pthread_mutex_unlock(&table->meal_locks[i]);
 		i++;
 	}
 	return (false);

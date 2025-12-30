@@ -17,6 +17,8 @@ void	*philo_routine(void *arg)
 		think(philo);
 		take_forks(philo);
 		eat(philo);
+		if (is_stopped(philo->data))
+			break ;
 		if (philo->data->must_eat_count != -1
 			&& philo->meals_eaten >= philo->data->must_eat_count)
 			break ;
