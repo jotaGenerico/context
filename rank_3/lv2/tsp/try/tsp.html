@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Guia de Estudo: TSP (Traveling Salesman Problem)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 3px solid #8e44ad; padding-bottom: 10px; }
+        .logic-card { background: #f5eef8; border-left: 5px solid #8e44ad; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .code-container { background: #282c34; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        pre { margin: 0; padding: 20px; color: #abb2bf; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.5; overflow-x: auto; }
+        .comment { color: #5c6370; font-style: italic; }
+        .step-title { font-weight: bold; color: #2c3e50; margin-top: 25px; display: block; font-size: 1.2em; border-left: 4px solid #8e44ad; padding-left: 10px; }
+        .important { color: #e06c75; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚕 TSP: O Problema do Caixeiro Viajante</h1>
+
+        <div class="logic-card">
+            <strong>O Desafio:</strong> Encontrar o caminho mais curto que visite todas as cidades e retorne ao ponto de partida.
+            <br><strong>Geometria:</strong> Usamos a fórmula da distância euclidiana: <code>sqrt((x1-x2)² + (y1-y2)²)</code>.
+        </div>
+
+        <span class="step-title">A Lógica da Solução</span>
+        <p>Como o número máximo de cidades é pequeno (11), podemos usar a força bruta:</p>
+        <ol>
+            <li>Lemos as coordenadas do <code>stdin</code>.</li>
+            <li>Geramos todas as <strong>permutações</strong> possíveis da ordem de visita das cidades.</li>
+            <li>Para cada ordem, calculamos a distância total, incluindo o retorno da última cidade para a primeira.</li>
+            <li>Guardamos o menor valor encontrado.</li>
+        </ol>
+
+
+
+        <span class="step-title">Código Integral e Comentado</span>
+        <div class="code-container">
+<pre>
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;float.h&gt; <span class="comment">// Para usar FLT_MAX</span>
+
+typedef struct {
+	float x;
+	float y;
+} City;
+
+<span class="comment">// Calcula a distância entre duas cidades</span>
+float	dist(City a, City b)
+{
+	return sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
+<span class="comment">// Calcula o comprimento total do caminho e fecha o ciclo</span>
+float	calculate_total(City *cities, int *path, int n)
+{
+	float sum = 0;
+	int i = 0;
+
+	while (i < n - 1)
+	{
+		sum += dist(cities[path[i]], cities[path[i + 1]]);
+		i++;
+	}
+	<span class="comment">// Retorno obrigatório à primeira cidade</span>
+	sum += dist(cities[path[n - 1]], cities[path[0]]);
+	return (sum);
+}
+
+void	ft_swap(int *a, int *b)
+{
+	int tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+<span class="comment">// Mesma lógica de permutação que você já conhece</span>
+void	solve(City *cities, int *path, int start, int n, float *min_len)
+{
+	int i;
+	float current_len;
+
+	if (start == n - 1)
+	{
+		current_len = calculate_total(cities, path, n);
+		if (current_len < *min_len)
+			*min_len = current_len;
+		return ;
+	}
+	i = start;
+	while (i < n)
+	{
+		ft_swap(&path[start], &path[i]);
+		solve(cities, path, start + 1, n, min_len);
+		ft_swap(&path[start], &path[i]); <span class="comment">// Backtrack</span>
+		i++;
+	}
+}
+
+int	main(void)
+{
+	City	cities[12];
+	int		path[12];
+	int		n = 0;
+	float	min_len = FLT_MAX;
+
+	<span class="comment">// Leitura conforme o formato '%f, %f\n'</span>
+	while (scanf("%f, %f\n", &cities[n].x, &cities[n].y) == 2)
+	{
+		path[n] = n;
+		n++;
+	}
+	if (n == 0)
+		return (0);
+
+	solve(cities, path, 0, n, &min_len);
+	printf("%.2f\n", min_len);
+
+	return (0);
+}
+</pre>
+        </div>
+
+        <span class="step-title">Dicas Imperativas para a Prova</span>
+        <ul>
+            <li><span class="important">-lm:</span> Ao compilar, não esqueça de adicionar <code>-lm</code> no final para o compilador encontrar a biblioteca matemática (<code>sqrtf</code>).</li>
+            <li><span class="important">FLT_MAX:</span> Inclua <code>&lt;float.h&gt;</code> para inicializar o <code>min_len</code> com o maior valor possível. Se esquecer, use um número muito grande como <code>1000000.0</code>.</li>
+            <li><span class="important">O Ciclo:</span> O erro mais comum é esquecer de somar a distância da última cidade de volta para a primeira. O TSP exige um <strong>circuito fechado</strong>.</li>
+            <li><span class="important">Scanf:</span> O formato <code>"%f, %f\n"</code> deve ser exato conforme o enunciado.</li>
+        </ul>
+
+        <div class="logic-card" style="background: #fff3cd; border-color: #f1c40f;">
+            <strong>Por que a Solução 1?</strong> Ela reutiliza a lógica de <code>ft_swap</code> e permutação recursiva que você usou no exercício anterior. Isso reduz a carga mental necessária para memorizar novos algoritmos durante o exame.
+        </div>
+    </div>
+</body>
+</html>

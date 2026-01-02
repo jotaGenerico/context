@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Guia de Estudo: Filter (Exam Rank 3)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 3px solid #f39c12; padding-bottom: 10px; }
+        .logic-card { background: #fff9f0; border-left: 5px solid #f39c12; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .code-container { background: #282c34; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        pre { margin: 0; padding: 20px; color: #abb2bf; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.5; overflow-x: auto; }
+        .comment { color: #5c6370; font-style: italic; }
+        .step-title { font-weight: bold; color: #2c3e50; margin-top: 25px; display: block; font-size: 1.2em; border-left: 4px solid #f39c12; padding-left: 10px; }
+        .important { color: #e06c75; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Filter: Lógica de Substituição Direta</h1>
+
+        <div class="logic-card">
+            <strong>O Objetivo:</strong> Substituir todas as ocorrências de uma string <code>s</code> vinda do <code>stdin</code> por asteriscos (<code>*</code>).
+            <br><strong>Abordagem:</strong> Armazenar a entrada em um buffer estático grande e processar comparando o padrão em cada posição.
+        </div>
+
+        <span class="step-title">A Lógica do Algoritmo</span>
+        <p>A função <code>ft_filter</code> percorre o texto. Para cada caractere, ela tenta "espiar" à frente para ver se o padrão <code>str</code> completo existe a partir dali:</p>
+        <ol>
+            <li>Se o padrão bater: Imprime o número correto de asteriscos e pula o índice <code>i</code> para o final do padrão.</li>
+            <li>Se não bater: Imprime apenas o caractere atual e avança <code>i</code> em 1.</li>
+        </ol>
+
+
+
+        <span class="step-title">Código Integral e Comentado</span>
+        <div class="code-container">
+<pre>
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+<span class="comment">// Define o tamanho do bloco de leitura (exigido pelo enunciado)</span>
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 10
+#endif
+
+<span class="comment">// Função que processa a string e aplica os asteriscos</span>
+void	ft_filter(char *line, char *str)
+{
+	int	len = strlen(str);
+	int	i = 0;
+
+	while (line[i])
+	{
+		int	h = 0;
+		<span class="comment">// Tenta dar um "match" no padrão a partir da posição i</span>
+		while (str[h] && line[i + h] == str[h])
+			h++;
+
+		<span class="comment">// Se h for igual ao tamanho do padrão, encontramos uma ocorrência completa</span>
+		if (h == len)
+		{
+			int	l = 0;
+			while (l < len)
+			{
+				write(1, "*", 1); <span class="comment">// Imprime um asterisco para cada letra</span>
+				l++;
+			}
+			i += h; <span class="comment">// Avança o índice i pulando o padrão encontrado</span>
+		}
+		else
+		{
+			<span class="comment">// Se não houve match, imprime o caractere original e avança 1</span>
+			write(1, &line[i], 1);
+			i++;
+		}
+	}
+}
+
+int	main(int argc, char **argv)
+{
+	<span class="comment">// Buffer estático grande para comportar a entrada do stdin</span>
+	char	line[999999];
+	int		ret = 1;
+	int		i = 0;
+
+	<span class="comment">// Validação rigorosa de argumentos: precisa de 1 e não pode ser vazio</span>
+	if (argc != 2 || !argv[1][0])
+		return (1);
+
+	<span class="comment">// 1. LER DO STDIN: Armazena tudo continuamente no array 'line'</span>
+	while (ret > 0)
+	{
+		ret = read(0, &line[i], BUFFER_SIZE);
+		if (ret < 0)
+		{
+			perror("Error"); <span class="comment">// Enunciado pede erro se o read falhar</span>
+			return (1);
+		}
+		i += ret;
+	}
+	<span class="comment">// Adiciona o terminador nulo para que line seja tratada como string</span>
+	line[i] = '\0';
+
+	<span class="comment">// 2. FILTRAR E IMPRIMIR</span>
+	ft_filter(line, argv[1]);
+
+	return (0);
+}
+</pre>
+        </div>
+
+        <span class="step-title">Dicas para a Prova</span>
+        <ul>
+            <li><span class="important">Fim da String:</span> Após o loop de <code>read</code>, é essencial colocar <code>line[i] = '\0';</code>. Sem isso, o <code>strlen</code> e o loop da <code>ft_filter</code> vão ler memória lixo.</li>
+            <li><span class="important">BUFFER_SIZE:</span> O enunciado diz que o programa será testado com tamanhos de buffer aleatórios. Por isso, usamos <code>BUFFER_SIZE</code> no <code>read</code>.</li>
+            <li><span class="important">Erros:</span> Use <code>perror("Error")</code> se o retorno do read for menor que 0 para garantir os pontos de tratamento de erro.</li>
+            <li><span class="important">Memória:</span> Como o <code>line[999999]</code> é declarado dentro do <code>main</code>, ele fica na Stack. Se o programa der <em>Segfault</em> com arquivos gigantes, você precisaria mover essa declaração para fora do <code>main</code> (tornando-a global) ou usar <code>malloc</code>.</li>
+        </ul>
+    </div>
+</body>
+</html>

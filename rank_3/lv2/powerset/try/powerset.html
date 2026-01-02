@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Guia de Estudo: Powerset (Exam Rank 3)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #27ae60; text-align: center; border-bottom: 3px solid #27ae60; padding-bottom: 10px; }
+        .logic-card { background: #eafaf1; border-left: 5px solid #27ae60; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .code-container { background: #282c34; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        pre { margin: 0; padding: 20px; color: #abb2bf; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.5; overflow-x: auto; }
+        .comment { color: #5c6370; font-style: italic; }
+        .step-title { font-weight: bold; color: #2c3e50; margin-top: 25px; display: block; font-size: 1.2em; border-left: 4px solid #27ae60; padding-left: 10px; }
+        .important { color: #e06c75; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>∑ Powerset: Soma de Subconjuntos</h1>
+
+        <div class="logic-card">
+            <strong>O Conceito Binário:</strong> Para cada número do conjunto, você tem duas escolhas: <strong>incluí-lo</strong> ou <strong>ignorá-lo</strong>. Essa abordagem é a mais robusta para lidar com o número <code>0</code> e garantir a ordem original dos elementos.
+        </div>
+
+        <span class="step-title">A Lógica da Árvore de Decisão</span>
+        <p>A cada nível da recursão, avançamos o índice. Se chegarmos ao fim do array e a soma acumulada for igual ao alvo, imprimimos o rastro que deixamos no array <code>path</code>.</p>
+
+        <span class="step-title">Código Integral e Comentado (Lógica Binária)</span>
+        <div class="code-container">
+<pre>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+<span class="comment">// Imprime o subconjunto baseado no rastro (path)</span>
+void	print_res(int *s, int *path, int size)
+{
+	int i = 0;
+	int first = 1;
+
+	while (i < size)
+	{
+		if (path[i]) <span class="comment">// Se o elemento foi escolhido (1)</span>
+		{
+			if (!first)
+				printf(" ");
+			printf("%d", s[i]);
+			first = 0;
+		}
+		i++;
+	}
+	printf("\n");
+}
+
+void	solve(int target, int *s, int *path, int size, int idx, int current_sum)
+{
+	<span class="comment">// Caso base: percorreu todos os elementos</span>
+	if (idx == size)
+	{
+		if (current_sum == target)
+			print_res(s, path, size);
+		return ;
+	}
+
+	<span class="comment">// Decisão 1: Inclui o elemento atual</span>
+	path[idx] = 1;
+	solve(target, s, path, size, idx + 1, current_sum + s[idx]);
+
+	<span class="comment">// Decisão 2: Ignora o elemento atual (Backtrack)</span>
+	path[idx] = 0;
+	solve(target, s, path, size, idx + 1, current_sum);
+}
+
+int	main(int ac, char **av)
+{
+	int target, size, i, *s, *path;
+
+	if (ac < 2)
+		return (0);
+	target = atoi(av[1]);
+	size = ac - 2;
+	s = malloc(sizeof(int) * size);
+	path = calloc(size, sizeof(int));
+	if (!s || !path)
+		return (1); <span class="comment">// Erro de malloc: exit 1 conforme enunciado</span>
+
+	i = 0;
+	while (i < size)
+	{
+		s[i] = atoi(av[i + 2]);
+		i++;
+	}
+	solve(target, s, path, size, 0, 0);
+	free(s);
+	free(path);
+	return (0);
+}
+</pre>
+        </div>
+
+        <span class="step-title">Dicas Imperativas para o Exam</span>
+        <ul>
+            <li><span class="important">Tratamento de Zeros:</span> Ao usar duas chamadas recursivas, o programa testa o <code>0</code> presente e o <code>0</code> ausente, gerando saídas como <code>1 2</code> e <code>1 0 2</code> separadamente.</li>
+            <li><span class="important">Linha Vazia:</span> Se o alvo for <code>0</code>, a recursão com todos os <code>path = 0</code> imprimirá apenas o <code>\n</code>, atendendo ao requisito do subconjunto vazio.</li>
+            <li><span class="important">Ordem Lexicográfica:</span> Diferente da permutação, aqui os elementos <strong>devem</strong> manter a ordem original do input. O loop de impressão no <code>path</code> garante isso.</li>
+        </ul>
+    </div>
+</body>
+</html>

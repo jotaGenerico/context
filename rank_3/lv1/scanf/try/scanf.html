@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Guia de Estudo: ft_scanf (Exam Rank 3)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .logic-card { background: #e8f4fd; border-left: 5px solid #3498db; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .code-container { background: #282c34; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        pre { margin: 0; padding: 20px; color: #abb2bf; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.5; overflow-x: auto; }
+        .comment { color: #5c6370; font-style: italic; }
+        .step-title { font-weight: bold; color: #2c3e50; margin-top: 25px; display: block; font-size: 1.2em; border-left: 4px solid #3498db; padding-left: 10px; }
+        .important { color: #e06c75; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⌨ ft_scanf: Mimic Scanf</h1>
+
+        <div class="logic-card">
+            <strong>O Conceito Central:</strong> O <code>ft_scanf</code> lê do <code>stdin</code> baseando-se em um formato. O desafio é usar <code>va_arg</code> para preencher os ponteiros passados e <code>ungetc</code> para devolver caracteres que não fazem parte da conversão atual.
+        </div>
+
+        <span class="step-title">A Lógica das Peças</span>
+        <p>Cada sub-função tem uma responsabilidade específica:</p>
+        <ul>
+            <li><strong>match_space:</strong> Consome todos os espaços em branco (espaço, \t, \n) e para no primeiro caractere "útil", devolvendo-o ao buffer.</li>
+            <li><strong>scan_int (%d):</strong> Ignora espaços, trata sinal (+ ou -) e acumula dígitos até encontrar algo que não seja número.</li>
+            <li><strong>scan_string (%s):</strong> Ignora espaços iniciais e lê até encontrar o próximo espaço ou EOF.</li>
+            <li><strong>scan_char (%c):</strong> Lê EXATAMENTE o próximo caractere, mesmo que seja um espaço.</li>
+        </ul>
+
+
+
+        <span class="step-title">Código Integral e Comentado (Baseado na Solução 2)</span>
+        <div class="code-container">
+<pre>
+#include &lt;stdarg.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
+
+<span class="comment">// Pula espaços em branco no stdin</span>
+int match_space(FILE *f)
+{
+	int	c;
+	while ((c = fgetc(f)) != EOF)
+	{
+		if (!isspace(c))
+		{
+			ungetc(c, f); <span class="comment">// Devolve o caractere não-espaço</span>
+			break ;
+		}
+	}
+	return (0);
+}
+
+<span class="comment">// Verifica se o próximo caractere no arquivo é igual ao esperado pelo formato</span>
+int match_char(FILE *f, char c)
+{
+	int	ch = fgetc(f);
+	if (ch == c)
+		return (1);
+	if (ch != EOF)
+		ungetc(ch, f);
+	return (0);
+}
+
+<span class="comment">// Conversão %c</span>
+int scan_char(FILE *f, va_list ap)
+{
+	int	ch = fgetc(f);
+	char *dst;
+
+	if (ch == EOF)
+		return (0);
+	dst = va_arg(ap, char *); <span class="comment">// Pega o ponteiro char* da lista</span>
+	*dst = (char)ch;
+	return (1);
+}
+
+<span class="comment">// Conversão %d</span>
+int scan_int(FILE *f, va_list ap)
+{
+	int	c = fgetc(f);
+	int	value = 0, sign = 1;
+
+	<span class="comment">// Trata sinal opcional</span>
+	if (c == '-' || c == '+')
+	{
+		if (c == '-') sign = -1;
+		c = fgetc(f);
+	}
+	<span class="comment">// Acumula valores numéricos</span>
+	while (isdigit(c))
+	{
+		value = value * 10 + (c - '0');
+		c = fgetc(f);
+	}
+	if (c != EOF) ungetc(c, f); <span class="comment">// Devolve o que não é dígito</span>
+
+	int *dst = va_arg(ap, int *);
+	*dst = value * sign;
+	return (1);
+}
+
+<span class="comment">// Conversão %s</span>
+int scan_string(FILE *f, va_list ap)
+{
+	char *dst = va_arg(ap, char *);
+	int	c = fgetc(f), i = 0;
+
+	if (c == EOF) return (0);
+	<span class="comment">// Lê até encontrar um espaço</span>
+	dst[i++] = (char)c;
+	while ((c = fgetc(f)) != EOF && !isspace(c))
+		dst[i++] = (char)c;
+	if (c != EOF) ungetc(c, f);
+	dst[i] = '\0';
+	return (1);
+}
+
+<span class="comment">// O resto do código (match_conv, ft_vfscanf) é fornecido no exame.
+// Você deve apenas garantir que o ft_scanf inicialize a va_list corretamente.</span>
+
+int ft_scanf(const char *format, ...)
+{
+	int	ret;
+	va_list ap;
+
+	va_start(ap, format); <span class="comment">// Inicializa a lista de argumentos</span>
+	ret = ft_vfscanf(stdin, format, ap);
+	va_end(ap); <span class="comment">// Limpa a lista</span>
+	return (ret);
+}
+</pre>
+        </div>
+
+        <span class="step-title">Dicas Cruciais para o Exame</span>
+        <ul>
+            <li><span class="important">ungetc:</span> É a função mais importante. Se você leu um caractere e ele não serve para a conversão atual (ex: uma letra tentando ler %d), você <strong>precisa</strong> devolvê-lo, ou o próximo <code>match</code> no formato vai falhar.</li>
+            <li><span class="important">va_arg:</span> Lembre-se que para o scanf, você sempre recebe <strong>ponteiros</strong>. Então use <code>va_arg(ap, int *)</code> ou <code>va_arg(ap, char *)</code>.</li>
+            <li><span class="important">%c vs %s:</span> O `%c` não pula espaços automaticamente. O `%s` e o `%d` pulam (por isso chamam <code>match_space</code> antes da conversão).</li>
+            <li><span class="important">EOF:</span> Sempre verifique se <code>fgetc</code> retornou EOF antes de tentar processar o caractere.</li>
+        </ul>
+
+        <div class="logic-card" style="background: #fff3cd; border-color: #f1c40f;">
+            <strong>Estratégia de Prova:</strong> Comece implementando o <code>ft_scanf</code> (o wrapper da va_list) e o <code>match_space</code>. Elas são a base para todas as outras funções funcionarem.
+        </div>
+    </div>
+</body>
+</html>

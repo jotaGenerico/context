@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Guia de Estudo: RIP (Exam Rank 3)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; }
+        .logic-card { background: #fdf2f2; border-left: 5px solid #e74c3c; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .code-container { background: #282c34; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        pre { margin: 0; padding: 20px; color: #abb2bf; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.5; overflow-x: auto; }
+        .comment { color: #5c6370; font-style: italic; }
+        .step-title { font-weight: bold; color: #2c3e50; margin-top: 25px; display: block; font-size: 1.2em; border-left: 4px solid #e74c3c; padding-left: 10px; }
+        .important { color: #e06c75; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>() RIP: Balanceamento de Parênteses</h1>
+
+        <div class="logic-card">
+            <strong>O Desafio:</strong> Remover o número <strong>mínimo</strong> de parênteses para que a expressão fique balanceada. Substituir removidos por espaços.
+            <br><strong>O que é balanceado?</strong> Todo <code>)</code> deve ter um <code>(</code> correspondente antes dele, e no final, o número de abertos e fechados deve ser igual.
+        </div>
+
+        <span class="step-title">A Estratégia em Duas Fases</span>
+        <ol>
+            <li><strong>Contagem (Mínimo):</strong> Primeiro, percorremos a string para descobrir quantos parênteses estão sobrando. Esse é o nosso <code>min_remove</code>.</li>
+            <li><strong>Recursão (Backtracking):</strong> Tentamos duas opções para cada parêntese: <strong>Ficar</strong> com ele ou <strong>Remover</strong> (trocar por espaço).</li>
+        </ol>
+
+
+
+        <span class="step-title">Código Integral e Comentado (Estilo 42)</span>
+        <div class="code-container">
+<pre>
+#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+
+<span class="comment">// Calcula o número mínimo de parênteses que PRECISAM ser removidos</span>
+int	get_min_remove(char *str)
+{
+	int open = 0;
+	int to_remove = 0;
+	int i = 0;
+
+	while (str[i])
+	{
+		if (str[i] == '(')
+			open++;
+		else if (str[i] == ')')
+		{
+			if (open > 0)
+				open--;
+			else
+				to_remove++; <span class="comment">// Sobrou um ')' sem '(' correspondente</span>
+		}
+		i++;
+	}
+	return (to_remove + open); <span class="comment">// to_remove (fechados extras) + open (abertos extras)</span>
+}
+
+<span class="comment">// Função de Backtracking</span>
+void	solve(char *str, int idx, int open, int close, int removed, int min_rem, char *res)
+{
+	<span class="comment">// Caso Base: Fim da string</span>
+	if (str[idx] == '\0')
+	{
+		<span class="comment">// Só imprime se estiver balanceado E removeu o mínimo necessário</span>
+		if (open == close && removed == min_rem)
+		{
+			res[idx] = '\0';
+			printf("%s\n", res);
+		}
+		return ;
+	}
+
+	<span class="comment">// OPÇÃO 1: MANTER o caractere</span>
+	res[idx] = str[idx];
+	if (str[idx] == '(')
+		solve(str, idx + 1, open + 1, close, removed, min_rem, res);
+	else if (str[idx] == ')')
+	{
+		<span class="comment">// Só mantém ')' se houver um '(' aberto antes</span>
+		if (open > close)
+			solve(str, idx + 1, open, close + 1, removed, min_rem, res);
+	}
+	else <span class="comment">// Se não for parêntese (não deve ocorrer neste exercício)</span>
+		solve(str, idx + 1, open, close, removed, min_rem, res);
+
+	<span class="comment">// OPÇÃO 2: REMOVER o caractere (trocar por espaço)</span>
+	if (str[idx] == '(' || str[idx] == ')')
+	{
+		<span class="comment">// Só tenta remover se ainda não ultrapassamos o limite mínimo</span>
+		if (removed < min_rem)
+		{
+			res[idx] = ' ';
+			solve(str, idx + 1, open, close, removed + 1, min_rem, res);
+		}
+	}
+}
+
+int	main(int ac, char **av)
+{
+	int	min_rem;
+	char	res[1024]; <span class="comment">// Buffer fixo para evitar malloc</span>
+
+	if (ac != 2)
+		return (0);
+
+	min_rem = get_min_remove(av[1]);
+	solve(av[1], 0, 0, 0, 0, min_rem, res);
+	return (0);
+}
+</pre>
+        </div>
+
+        <span class="step-title">Por que esta solução é a "Ideia Melhor"?</span>
+        <ul>
+            <li><span class="important">Zero Malloc:</span> No exame, cada <code>malloc</code> é um risco. Usar um <code>char res[1024]</code> é seguro, pois as strings de teste raramente passam disso.</li>
+            <li><span class="important">Controle de "Removed":</span> Adicionar <code>if (removed < min_rem)</code> na opção de remover evita que o algoritmo explore caminhos que removem parênteses demais, tornando-o muito mais rápido.</li>
+            <li><span class="important">Balanceamento Instantâneo:</span> Ao passar <code>open</code> e <code>close</code> na recursão, verificamos o balanceamento em tempo real.</li>
+        </ul>
+
+        <div class="logic-card" style="background: #fff3cd; border-color: #f1c40f;">
+            <strong>Dica de Ouro:</strong> O exercício pede para trocar por <strong>espaço</strong>, não deletar o caractere. Por isso o <code>res[idx] = ' '</code> é fundamental para manter o tamanho original da string no output.
+        </div>
+    </div>
+</body>
+</html>
